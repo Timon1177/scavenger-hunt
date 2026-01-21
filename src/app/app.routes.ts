@@ -10,6 +10,11 @@ export const routes: Routes = [
     redirectTo: 'home',
     pathMatch: 'full',
   },
+  
+  {
+    path: 'permisions',
+    loadComponent: () => import('./permisions/permisions.page').then( m => m.PermisionsPage)
+  },
   {
     path: 'geolocation-task',
     loadComponent: () => import('./geolocation-task/geolocation-task.page').then( m => m.GeolocationTaskPage)
@@ -19,16 +24,8 @@ export const routes: Routes = [
     loadComponent: () => import('./distance-task/distance-task.page').then( m => m.DistanceTaskPage)
   },
   {
-    path: 'home',
-    loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
+    path: 'qr-scan-task',
+    loadComponent: () => import('./qr-scan-task/qr-scan-task.page').then( m => m.QrScanTaskPage)
   },
-  {
-    path: '',
-    redirectTo: 'home',
-    pathMatch: 'full',
-  },
-  {
-    path: 'permisions',
-    loadComponent: () => import('./permisions/permisions.page').then( m => m.PermisionsPage)
-  },
+
 ];
