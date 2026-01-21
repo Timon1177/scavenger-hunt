@@ -1,12 +1,46 @@
 import { Component } from '@angular/core';
-import { IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/angular/standalone';
+import {
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardSubtitle,
+  IonIcon,
+  IonChip,
+  IonLabel,
+  IonHeader,
+  IonItem,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonButton,
+} from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { radioButtonOn } from 'ionicons/icons';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent],
+  imports: [
+    IonCardTitle,
+    IonCardSubtitle,
+    IonCard,
+    IonCardContent,
+    IonCardHeader,
+    IonIcon,
+    IonChip,
+    IonLabel,
+    IonItem,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonButton,
+  ],
 })
 export class HomePage {
-  constructor() {}
+  constructor() {
+    addIcons({ radioButtonOn });
+  }
 }
