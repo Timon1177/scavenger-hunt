@@ -1,0 +1,67 @@
+<ion-header translucent="true">
+  <ion-toolbar>
+    <ion-title>{{ headerTitle }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen="true" class="page">
+  <div class="shell">
+    <ion-card class="task-card">
+      <ion-card-content>
+        <div class="subline">{{ headerSubtitle }}</div>
+
+        <div class="result-tag">SCHNITZELJAGD ABGESCHLOSSEN</div>
+        <div class="result-title">{{ headline }}</div>
+        <div class="result-sub">{{ description }}</div>
+
+        <div class="progress-row">
+          <div class="progress-steps">
+            <span class="s on"></span>
+            <span class="s on"></span>
+            <span class="s on"></span>
+            <span class="s on"></span>
+            <span class="s on"></span>
+            <span class="s on"></span>
+          </div>
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-label">Name</div>
+            <div class="stat-value">{{ name }}</div>
+          </div>
+
+          <div class="stat">
+            <div class="stat-label">Dauer</div>
+            <div class="stat-value">{{ duration }}</div>
+          </div>
+
+          <div class="stat">
+            <div class="stat-label">Schnitzel</div>
+            <div class="stat-value">
+              <span class="emoji">🍖</span>{{ schnitzel }}
+            </div>
+          </div>
+
+          <div class="stat">
+            <div class="stat-label">Kartoffeln</div>
+            <div class="stat-value">
+              <span class="emoji">🥔</span>{{ kartoffeln }}
+            </div>
+          </div>
+        </div>
+
+        <ion-button expand="block" size="large" class="save" (click)="save()">
+          Speichern
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
+
+<ion-footer class="footer" translucent="true">
+  <div class="footer-row">
+    <ion-button class="footer-btn" fill="clear" (click)="goStart()">Start</ion-button>
+    <ion-button class="footer-btn primary" (click)="goLeaderboard()">Leaderboard</ion-button>
+  </div>
+</ion-footer>
