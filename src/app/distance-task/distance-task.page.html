@@ -1,0 +1,67 @@
+<ion-header translucent="true">
+  <ion-toolbar>
+    <ion-title>{{ title }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen="true" class="page">
+  <div class="shell">
+    <ion-card class="task-card">
+      <ion-card-content>
+        <div class="subline">{{ subtitle }}</div>
+
+        <div class="task-head">
+          <div class="dot"></div>
+          <div>
+            <div class="task-title">{{ taskTitle }}</div>
+            <div class="task-sub">{{ taskDesc }}</div>
+          </div>
+        </div>
+
+        <div class="progress-row">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="progressRatio * 100"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-top">
+            <div class="panel-left">
+              <div class="metric-label">Gelaufen</div>
+              <div class="metric-value">{{ distanceLabel }}</div>
+            </div>
+
+            <div class="panel-right">
+              <ion-button
+                expand="block"
+                size="large"
+                class="primary"
+                [disabled]="state === 'tracking' || state === 'completed'"
+                (click)="startTracking()"
+              >
+                {{ startButtonText }}
+              </ion-button>
+            </div>
+          </div>
+
+          <ion-button
+            expand="block"
+            size="large"
+            class="finish"
+            [disabled]="!canFinish || state === 'completed'"
+            (click)="finishTask()"
+          >
+            Abschliessen
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
+
+<ion-footer class="footer" translucent="true">
+  <div class="footer-row">
+    <ion-button fill="clear" class="footer-btn" (click)="cancelRun()">Abbrechen</ion-button>
+    <ion-button class="footer-btn primary" (click)="skipTask()">Überspringen</ion-button>
+  </div>
+</ion-footer>

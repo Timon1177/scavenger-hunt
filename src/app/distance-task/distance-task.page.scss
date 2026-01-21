@@ -1,0 +1,147 @@
+.page {
+  --background: radial-gradient(1200px 800px at 20% 10%, #1a2c44 0%, #0b1220 55%, #070b14 100%);
+}
+
+.shell {
+  min-height: 100%;
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.task-card {
+  width: 100%;
+  max-width: 440px;
+  background: rgba(18, 26, 38, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(10px);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.subline {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 10px;
+}
+
+.task-head {
+  display: grid;
+  grid-template-columns: 14px 1fr;
+  gap: 12px;
+  align-items: start;
+  margin-bottom: 14px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  margin-top: 6px;
+  border-radius: 999px;
+  background: #3b82f6;
+  box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.14);
+}
+
+.task-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.task-sub {
+  margin-top: 4px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.35;
+}
+
+.progress-row {
+  margin: 10px 0 16px;
+}
+
+.progress-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(180deg, #22c55e, #3b82f6);
+  border-radius: 999px;
+  transition: width 220ms ease;
+}
+
+.panel {
+  margin-top: 6px;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(8, 12, 20, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.panel-top {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.metric-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 6px;
+}
+
+.metric-value {
+  font-size: 13px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+ion-button.primary {
+  --background: linear-gradient(180deg, #3b82f6, #2563eb);
+  --border-radius: 16px;
+  --box-shadow: 0 14px 30px rgba(37, 99, 235, 0.22);
+  font-weight: 800;
+  width: 100%;
+}
+
+ion-button.finish {
+  margin-top: 14px;
+  --background: linear-gradient(180deg, #3b82f6, #2563eb);
+  --border-radius: 16px;
+  font-weight: 800;
+}
+
+ion-button.finish.button-disabled {
+  --background: rgba(255, 255, 255, 0.16);
+  --color: rgba(255, 255, 255, 0.55);
+}
+
+.footer {
+  background: rgba(8, 12, 20, 0.72);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+}
+
+.footer-row {
+  padding: 10px 14px 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.footer-btn {
+  --border-radius: 16px;
+  font-weight: 800;
+}
+
+.footer-btn.primary {
+  --background: linear-gradient(180deg, #3b82f6, #2563eb);
+  --color: #fff;
+}

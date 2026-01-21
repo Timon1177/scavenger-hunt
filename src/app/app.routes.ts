@@ -13,5 +13,9 @@ export const routes: Routes = [
     path: 'geolocation-task',
     loadComponent: () => import('./geolocation-task/geolocation-task.page').then( m => m.GeolocationTaskPage)
   },
+  {
+    path: 'distance-task',
+    loadComponent: () => import('./distance-task/distance-task.page').then( m => m.DistanceTaskPage)
+  },
 
 ];
