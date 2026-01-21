@@ -12,10 +12,6 @@ export const routes: Routes = [
   },
   
   {
-    path: 'permisions',
-    loadComponent: () => import('./permisions/permisions.page').then( m => m.PermisionsPage)
-  },
-  {
     path: 'geolocation-task',
     loadComponent: () => import('./geolocation-task/geolocation-task.page').then( m => m.GeolocationTaskPage)
   },
@@ -42,6 +38,10 @@ export const routes: Routes = [
   {
     path: 'result',
     loadComponent: () => import('./result/result.page').then( m => m.ResultPage)
+  },
+  {
+    path: 'permissions',
+    loadComponent: () => import('./permissions/permissions.page').then( m => m.PermissionsPage)
   },
 
 ];
