@@ -1,27 +1,30 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title> Schnitzeljagd </ion-title>
+    <ion-title>Berechtigungen</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Schnitzeljagd</ion-title>
+      <ion-title size="large">Berechtigungen</ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-card>
     <ion-card-header>
-      <ion-card-title>NEUER LAUF</ion-card-title>
-      <ion-card-subtitle>Bereit für die nächste Runde?</ion-card-subtitle>
+      <ion-card-title>SICHERHEIT</ion-card-title>
+      <ion-card-subtitle>Wir brauchen kurz Zugriff</ion-card-subtitle>
     </ion-card-header>
     <ion-card-content>
-      Gib deinen Namen ein, starte die Schnitzeljagd und löse Aufgaben mit
-      Standort, Kamera und Sensoren.
+      Standort für Geolocation-Aufgaben und Kamera für QR-Scan. Ohne das kann
+      die Schnitzeljagd nicht starten.
     </ion-card-content>
   </ion-card>
   <ion-card>
-    <ion-button id="new-hunt">Schnitzeljagd starten</ion-button>
+    <ion-chip class="perms-notice">
+      <ion-icon name="radio-button-on" color="warning" />
+      <ion-label>Kamera & Standort benötig</ion-label>
+    </ion-chip>
     <ion-chip class="perms-notice">
       <ion-icon name="radio-button-on" color="warning" />
       <ion-label>Kamera & Standort benötig</ion-label>

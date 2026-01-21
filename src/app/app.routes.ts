@@ -9,7 +9,13 @@ export const routes: Routes = [
     path: '',
     redirectTo: 'home',
     pathMatch: 'full',
-  },  {
+  },
+  
+  {
+    path: 'permisions',
+    loadComponent: () => import('./permisions/permisions.page').then( m => m.PermisionsPage)
+  },
+  {
     path: 'geolocation-task',
     loadComponent: () => import('./geolocation-task/geolocation-task.page').then( m => m.GeolocationTaskPage)
   },

@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import {
   IonCard,
   IonCardContent,
@@ -19,9 +21,10 @@ import { addIcons } from 'ionicons';
 import { radioButtonOn } from 'ionicons/icons';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: 'home.page.html',
-  styleUrls: ['home.page.scss'],
+  selector: 'app-permisions',
+  templateUrl: './permisions.page.html',
+  styleUrls: ['./permisions.page.scss'],
+  standalone: true,
   imports: [
     IonCardTitle,
     IonCardSubtitle,
@@ -37,10 +40,14 @@ import { radioButtonOn } from 'ionicons/icons';
     IonTitle,
     IonContent,
     IonButton,
+    CommonModule,
+    FormsModule
   ],
 })
-export class HomePage {
+export class PermisionsPage implements OnInit {
   constructor() {
     addIcons({ radioButtonOn });
   }
+
+  ngOnInit() {}
 }
