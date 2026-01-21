@@ -1,8 +1,8 @@
-import type { CapacitorConfig } from '@capacitor/cli';
+import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'scavenger-hunt',
+  appId: 'ch.schule.schnitzeljagd',
+  appName: 'Schnitzeljagd',
   webDir: 'www',
   bundledWebRuntime: false,
   server: {

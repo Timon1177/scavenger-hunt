@@ -1,0 +1,70 @@
+<ion-header translucent="true">
+  <ion-toolbar>
+    <ion-title>{{ title }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen="true" class="page">
+  <div class="shell">
+    <ion-card class="task-card">
+      <ion-card-content>
+        <div class="subline">{{ subtitle }}</div>
+
+        <div class="task-head">
+          <div class="dot"></div>
+          <div>
+            <div class="task-title">{{ taskTitle }}</div>
+            <div class="task-sub">{{ taskDesc }}</div>
+          </div>
+        </div>
+
+        <div class="progress-row">
+          <div class="progress-bar">
+            <div class="progress-fill"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="status-row">
+            <div class="status-left">
+              <div class="status-label">Status</div>
+            </div>
+
+            <div class="status-right" [class.ok]="isCharging === true">
+              <span class="dot-mini" *ngIf="isCharging === true"></span>
+              <span class="status-value">{{ statusText }}</span>
+            </div>
+          </div>
+
+          <ion-button
+            *ngIf="!canFinish"
+            expand="block"
+            size="large"
+            class="primary"
+            (click)="checkStatus()"
+          >
+            Status prüfen
+          </ion-button>
+
+          <ion-button
+            *ngIf="canFinish || state === 'completed'"
+            expand="block"
+            size="large"
+            class="finish"
+            [disabled]="state === 'completed'"
+            (click)="finishTask()"
+          >
+            Abschliessen
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
+
+<ion-footer class="footer" translucent="true">
+  <div class="footer-row">
+    <ion-button fill="clear" class="footer-btn" (click)="cancelRun()">Abbrechen</ion-button>
+    <ion-button class="footer-btn primary" (click)="skipTask()">Überspringen</ion-button>
+  </div>
+</ion-footer>

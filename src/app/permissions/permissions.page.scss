@@ -1,0 +1,129 @@
+.page {
+  --background: radial-gradient(1200px 800px at 20% 10%, #1a2c44 0%, #0b1220 55%, #070b14 100%);
+}
+
+.shell {
+  min-height: 100%;
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.task-card {
+  width: 100%;
+  max-width: 440px;
+  background: rgba(18, 26, 38, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(10px);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.subline {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 10px;
+}
+
+.section-label {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 6px;
+}
+
+.perm-title {
+  font-size: 22px;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.93);
+  margin-bottom: 6px;
+}
+
+.perm-sub {
+  font-size: 13px;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.65);
+  margin-bottom: 14px;
+}
+
+.perm-panel {
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(8, 12, 20, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 14px;
+}
+
+.perm-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 6px;
+  color: rgba(255, 255, 255, 0.82);
+  font-weight: 800;
+}
+
+.left {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.dot-mini {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #ef4444;
+  display: inline-block;
+}
+
+.dot-mini.ok {
+  background: #22c55e;
+}
+
+.pill {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.pill.ok {
+  border-color: rgba(34, 197, 94, 0.25);
+  color: rgba(34, 197, 94, 0.95);
+}
+
+ion-button.primary {
+  --background: linear-gradient(180deg, #3b82f6, #2563eb);
+  --border-radius: 16px;
+  --box-shadow: 0 14px 30px rgba(37, 99, 235, 0.22);
+  font-weight: 900;
+}
+
+.footer {
+  background: rgba(8, 12, 20, 0.72);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+}
+
+.footer-row {
+  padding: 10px 14px 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.footer-btn {
+  --border-radius: 16px;
+  font-weight: 900;
+}
+
+.footer-btn.primary {
+  --background: linear-gradient(180deg, #3b82f6, #2563eb);
+  --color: #fff;
+}
