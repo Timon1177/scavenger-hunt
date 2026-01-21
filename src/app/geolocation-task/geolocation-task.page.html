@@ -1,0 +1,84 @@
+<ion-header translucent="true">
+  <ion-toolbar>
+    <ion-title>Aufgabe</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen="true" class="page">
+  <div class="shell">
+    <ion-card class="task-card">
+      <ion-card-content>
+        <div class="task-head">
+          <div class="dot"></div>
+          <div>
+            <div class="task-title">{{ title }}</div>
+            <div class="task-sub">{{ intro }}</div>
+          </div>
+        </div>
+
+        <div class="progress-row">
+          <div class="progress-bar">
+            <div class="progress-fill" [class.done]="state === 'completed'"></div>
+          </div>
+        </div>
+
+        <div *ngIf="state === 'idle'" class="panel">
+          <ion-button expand="block" size="large" class="primary" (click)="startTask()">
+            Aufgabe starten
+          </ion-button>
+        </div>
+
+        <div *ngIf="state !== 'idle'" class="panel">
+          <div class="panel-head">
+            <div class="panel-title">Ziel erreicht?</div>
+            <ion-chip class="chip-live" *ngIf="state === 'tracking'">
+              <ion-label>Live</ion-label>
+            </ion-chip>
+            <ion-chip class="chip-done" *ngIf="state === 'completed'">
+              <ion-label>Erledigt</ion-label>
+            </ion-chip>
+          </div>
+
+          <div class="panel-sub">
+            Koordinaten-Check im Umkreis. Optional Karte anzeigen (Plugin Geolocation).
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <div class="stat-label">Distanz</div>
+              <div class="stat-value">{{ distanceLabel }}</div>
+            </div>
+
+            <div class="stat">
+              <div class="stat-label">Status</div>
+              <div
+                class="stat-value"
+                [class.too-far]="statusMode === 'too-far'"
+                [class.in-range]="statusMode === 'in-range'"
+              >
+                {{ statusLabel }}
+              </div>
+            </div>
+          </div>
+
+          <ion-button
+            expand="block"
+            size="large"
+            class="finish"
+            [disabled]="!canFinish || state === 'completed'"
+            (click)="finishTask()"
+          >
+            Abschliessen
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
+
+<ion-footer class="footer" translucent="true">
+  <div class="footer-row">
+    <ion-button fill="clear" class="footer-btn" (click)="cancelRun()">Abbrechen</ion-button>
+    <ion-button class="footer-btn primary" (click)="skipTask()">Überspringen</ion-button>
+  </div>
+</ion-footer>
