@@ -5,13 +5,14 @@ import { IonSegmentButton, IonFooter, IonSegment, IonAlert, IonContent,IonButton
 import { IHero } from '../ihero';
 import { HeroService } from '../hero-service';
 import { HeroComponent } from '../hero/hero.component';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-heroes',
   templateUrl: './heroes.page.html',
   styleUrls: ['./heroes.page.scss'],
   standalone: true,
-  imports: [IonFooter, IonAlert,IonContent, IonHeader, IonTitle, IonToolbar, IonButton, CommonModule, FormsModule, HeroComponent, IonItem, IonList]
+  imports: [RouterLink, IonFooter, IonAlert,IonContent, IonHeader, IonTitle, IonToolbar, IonButton, CommonModule, FormsModule, HeroComponent, IonItem, IonList]
 })
 export class Heroes implements OnInit{
 
