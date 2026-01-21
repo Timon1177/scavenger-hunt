@@ -1,0 +1,32 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>hero-detail</ion-title>
+    <ion-button id="new-hero2">+</ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    @if (hero) {
+        <div>
+            <h2>{{hero.name | uppercase}} Details</h2>
+            <div>id: {{hero.id}}</div>
+            <div>
+            <label for="hero-name">Hero name: </label>
+            <input id="hero-name" [(ngModel)]="hero.name" placeholder="name">
+            </div>
+            <div>
+            <label for="hero-power">Hero power: </label>
+            <input id="hero-power" [(ngModel)]="hero.power" placeholder="power">
+            </div>
+        </div>
+        }
+  <button type="button" (click)="goBack()">go back</button>
+  <ion-alert
+  trigger="new-hero2"
+  header="New Hero"
+  [inputs]="alertInputs"
+  [buttons]="alertButtons"
+  />
+</ion-content>
+
+
