@@ -31,5 +31,9 @@ export const routes: Routes = [
     path: 'sensor-task',
     loadComponent: () => import('./sensor-task/sensor-task.page').then( m => m.SensorTaskPage)
   },
+  {
+    path: 'charge-task',
+    loadComponent: () => import('./charge-task/charge-task.page').then( m => m.ChargeTaskPage)
+  },
 
 ];
