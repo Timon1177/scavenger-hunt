@@ -35,5 +35,9 @@ export const routes: Routes = [
     path: 'charge-task',
     loadComponent: () => import('./charge-task/charge-task.page').then( m => m.ChargeTaskPage)
   },
+  {
+    path: 'wlan-task',
+    loadComponent: () => import('./wlan-task/wlan-task.page').then( m => m.WlanTaskPage)
+  },
 
 ];
