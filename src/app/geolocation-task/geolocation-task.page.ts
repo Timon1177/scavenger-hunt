@@ -6,12 +6,15 @@ import {
   IonTitle,
   IonContent,
   IonCard,
+  IonCardHeader,
   IonCardContent,
   IonButton,
   IonFooter,
   IonChip,
-  IonLabel
+  IonLabel,
+  IonIcon,
 } from '@ionic/angular/standalone';
+
 
 import { Geolocation } from '@capacitor/geolocation';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -28,22 +31,23 @@ type TaskState = 'idle' | 'tracking' | 'completed';
     IonTitle,
     IonContent,
     IonCard,
+    IonCardHeader,
     IonCardContent,
     IonButton,
     IonFooter,
     IonChip,
-    IonLabel
+    IonLabel,
+    IonIcon,
   ],
   templateUrl: './geolocation-task.page.html',
-  styleUrl: './geolocation-task.page.scss',
+  styleUrls: ['./geolocation-task.page.scss'],
 })
 export class GeolocationTaskPage implements OnDestroy {
-  state: TaskState = 'idle';
 
+  state: TaskState = 'idle';
   title = 'Geolocation';
   intro = 'Beweg dich in den Zielbereich. Sobald du nah genug bist, kannst du bestätigen.';
 
-  // ✅ HIER eure Zielkoordinaten setzen
   target = { lat: 47.0502, lng: 8.3093 };
   targetRadiusMeters = 10;
 
@@ -77,7 +81,6 @@ export class GeolocationTaskPage implements OnDestroy {
     try {
       await Haptics.impact({ style: ImpactStyle.Medium });
     } catch {
-      // web: ignore
     }
   }
 

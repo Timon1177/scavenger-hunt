@@ -1,15 +1,10 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title> Schnitzeljagd </ion-title>
+    <ion-title>Schnitzeljagd</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Schnitzeljagd</ion-title>
-    </ion-toolbar>
-  </ion-header>
   <ion-card>
     <ion-card-header>
       <ion-card-title>NEUER LAUF</ion-card-title>
@@ -20,10 +15,29 @@
       Standort, Kamera und Sensoren.
     </ion-card-content>
   </ion-card>
+
   <ion-card>
     <ion-button id="new-hunt">Schnitzeljagd starten</ion-button>
+
+    <ion-alert
+      #nameAlert
+      trigger="new-hunt"
+      header="Dein Name"
+      [buttons]="alertButtons"
+      [inputs]="alertInputs"
+      (didDismiss)="onNameAlertDismiss()"
+      backdropDismiss="false"
+    ></ion-alert>
+
+    <ion-alert
+      #errorAlert
+      header="Fehler"
+      message="Bitte gib zuerst deinen Namen ein."
+      [buttons]="['OK']"
+    ></ion-alert>
+
     <ion-chip class="perms-notice">
-      <ion-icon name="radio-button-on" color="warning" />
+      <ion-icon name="radio-button-on" color="warning"></ion-icon>
       <ion-label>Kamera & Standort benötig</ion-label>
     </ion-chip>
   </ion-card>
