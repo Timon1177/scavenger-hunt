@@ -6,6 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Location, UpperCasePipe } from '@angular/common';
 import { HeroService } from '../hero-service';
 import { IHero } from '../ihero';
+import { PhotoService } from '../photo.service';
 
 @Component({
   selector: 'app-hero-detail',
@@ -18,7 +19,8 @@ export class HeroDetailPage implements OnInit {
   private route = inject(ActivatedRoute);
   private heroService = inject(HeroService);
   private location = inject(Location);
-  
+  private photoService = inject(PhotoService)
+
   constructor() { }
 
   hero: IHero | undefined;
@@ -76,4 +78,7 @@ export class HeroDetailPage implements OnInit {
       },
     },
   ];
+  addPhotoToGallery() {
+    this.photoService.addNewToGallery();
+  }
 }
