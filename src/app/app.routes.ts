@@ -17,5 +17,9 @@ export const routes: Routes = [
     path: 'distance-task',
     loadComponent: () => import('./distance-task/distance-task.page').then( m => m.DistanceTaskPage)
   },
+  {
+    path: 'qr-scan-task',
+    loadComponent: () => import('./qr-scan-task/qr-scan-task.page').then( m => m.QrScanTaskPage)
+  },
 
 ];
