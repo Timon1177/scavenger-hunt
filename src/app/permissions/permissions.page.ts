@@ -63,20 +63,16 @@ export class PermissionsPage {
     await this.refreshPermissions();
   }
 
-  back(): void {
-    // placeholder: später routing back
-  }
+  back(): void {}
 
   next(): void {
     if (!this.canContinue) return;
-    // placeholder: später routing weiter
   }
 
   private async checkLocation(): Promise<PermState> {
     try {
       const p = await Geolocation.checkPermissions();
-      const ok = p.location === 'granted' || p.coarseLocation === 'granted';
-      if (ok) return 'granted';
+      if (p.location === 'granted') return 'granted';
       if (p.location === 'denied') return 'denied';
       return 'unknown';
     } catch {
@@ -86,7 +82,7 @@ export class PermissionsPage {
 
   private async requestLocation(): Promise<void> {
     try {
-      await Geolocation.requestPermissions({ permissions: ['location', 'coarseLocation'] });
+      await Geolocation.requestPermissions({ permissions: ['location'] });
     } catch {}
   }
 
