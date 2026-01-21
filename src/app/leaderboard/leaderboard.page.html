@@ -1,0 +1,48 @@
+<ion-header translucent="true">
+  <ion-toolbar>
+    <ion-title>Leaderboard</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen="true" class="page">
+  <div class="shell">
+    <ion-card class="task-card">
+      <ion-card-content>
+        <div class="task-head">
+          <div class="dot"></div>
+          <div>
+            <div class="task-title">{{ title }}</div>
+            <div class="task-sub">{{ intro }}</div>
+          </div>
+        </div>
+      </ion-card-content>
+
+      <ion-card-content>
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title">Online</div>
+          </div>
+          @for (hunter of hunters; track hunter.name) {
+          <div class="stats">
+            <div class="stat">
+              <div class="stat-label">{{hunter.name}}</div>
+              <div class="stat-value">
+                {{formatDate(hunter.date) + " " +formatTime(hunter.time) + " " + "🥔" + hunter.potato + " " + "🥩"
+                + hunter.schnitzel}}
+              </div>
+            </div>
+          </div>
+          }
+          <ion-button expand="block" size="large" class="finish">
+            Abschliessen
+          </ion-button>
+        </div>
+      </ion-card-content>
+      <ion-footer class="footer" translucent="true">
+        <div class="footer-row">
+          <ion-button class="footer-btn primary">Start</ion-button>
+        </div>
+      </ion-footer>
+    </ion-card>
+  </div>
+</ion-content>

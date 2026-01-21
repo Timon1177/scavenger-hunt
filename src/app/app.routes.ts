@@ -26,6 +26,10 @@ export const routes: Routes = [
   {
     path: 'qr-scan-task',
     loadComponent: () => import('./qr-scan-task/qr-scan-task.page').then( m => m.QrScanTaskPage)
+  },  {
+    path: 'leaderboard',
+    loadComponent: () => import('./leaderboard/leaderboard.page').then( m => m.LeaderboardPage)
   },
+
 
 ];
