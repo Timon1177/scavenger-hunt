@@ -1,0 +1,73 @@
+<ion-header translucent="true">
+  <ion-toolbar>
+    <ion-title>{{ title }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen="true" class="page">
+  <div class="shell">
+    <ion-card class="task-card">
+      <ion-card-content>
+        <div class="subline">{{ subtitle }}</div>
+
+        <div class="task-head">
+          <div class="dot"></div>
+          <div>
+            <div class="task-title">{{ taskTitle }}</div>
+            <div class="task-sub">{{ taskDesc }}</div>
+          </div>
+        </div>
+
+        <div class="progress-row">
+          <div class="progress-bar">
+            <div class="progress-fill top"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <ion-chip class="chip" [class.run]="statusMode === 'run'" [class.done]="statusMode === 'done'">
+            <span class="dot-mini" [class.run]="statusMode === 'run'" [class.done]="statusMode === 'done'"></span>
+            <ion-label>{{ statusLabel }}</ion-label>
+          </ion-chip>
+
+          <div class="mid">
+            <div class="mid-label">Fortschritt</div>
+            <div class="mid-value">{{ progress }}%</div>
+
+            <div class="bar">
+              <div class="bar-fill" [style.width.%]="progress"></div>
+            </div>
+          </div>
+
+          <ion-button
+            *ngIf="state === 'idle'"
+            expand="block"
+            size="large"
+            class="primary"
+            (click)="startTask()"
+          >
+            Aufgabe starten
+          </ion-button>
+
+          <ion-button
+            *ngIf="state !== 'idle'"
+            expand="block"
+            size="large"
+            class="finish"
+            [disabled]="!canFinish"
+            (click)="finishTask()"
+          >
+            Abschliessen
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
+
+<ion-footer class="footer" translucent="true">
+  <div class="footer-row">
+    <ion-button fill="clear" class="footer-btn" (click)="cancelRun()">Abbrechen</ion-button>
+    <ion-button class="footer-btn primary" (click)="skipTask()">Überspringen</ion-button>
+  </div>
+</ion-footer>
