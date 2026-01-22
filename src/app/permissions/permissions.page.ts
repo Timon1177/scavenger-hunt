@@ -119,4 +119,3 @@ export class PermissionsPage implements OnInit{
     return state === 'granted' ? 'ok' : 'bad';
   }
 }
-/**/
