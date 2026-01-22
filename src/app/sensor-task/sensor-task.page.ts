@@ -1,5 +1,8 @@
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TaskNavigationService } from '../services/task-navigation.service';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { Router,RouterLink } from '@angular/router';
 import {
   IonHeader,
   IonToolbar,
@@ -35,6 +38,9 @@ type TaskState = 'idle' | 'running' | 'completed';
   styleUrl: './sensor-task.page.scss',
 })
 export class SensorTaskPage implements OnDestroy {
+
+  constructor(private nav: TaskNavigationService, private router: Router) {}
+
   title = 'Sensor';
   subtitle = 'Bewegung / Lage';
   taskTitle = 'Sensor-Aufgabe';
@@ -45,13 +51,11 @@ export class SensorTaskPage implements OnDestroy {
   progress = 0; // 0..100
   private tickTimer: any = null;
 
-  // Detection tuning
-  private requiredHoldMs = 5000; 
+  private requiredHoldMs = 5000;
   private holdMs = 0;
 
   private lastTs = 0;
 
-  // We consider "upside down" if beta is near +/-180 (DeviceOrientationEvent)
   private upsideDown = false;
   private orientationHandler?: (e: DeviceOrientationEvent) => void;
 
@@ -85,19 +89,26 @@ export class SensorTaskPage implements OnDestroy {
     this.tickTimer = setInterval(() => this.tick(), 80);
   }
 
-  finishTask(): void {
+  async finishTask(): Promise<void> {
     if (!this.canFinish) return;
-    // hier könnt ihr später Navigation/State speichern
+    try {
+      await Haptics.impact({ style: ImpactStyle.Medium });
+    } catch {}
+    this.state = 'completed';
   }
 
   cancelRun(): void {
     this.reset();
+    this.nav.abort();
   }
 
   skipTask(): void {
     this.cleanup();
-    this.state = 'completed';
-    this.progress = 100;
+    this.nav.skip(this.currentPath());
+  }
+
+  nextTask(): void {
+    this.nav.next(this.currentPath());
   }
 
   private tick(): void {
@@ -110,7 +121,6 @@ export class SensorTaskPage implements OnDestroy {
     if (this.upsideDown) {
       this.holdMs = Math.min(this.requiredHoldMs, this.holdMs + dt);
     } else {
-      // falloff, wenn wieder normal gehalten
       this.holdMs = Math.max(0, this.holdMs - dt * 1.5);
     }
 
@@ -120,6 +130,11 @@ export class SensorTaskPage implements OnDestroy {
     if (this.progress >= 100) {
       this.state = 'completed';
       this.cleanup();
+      void (async () => {
+        try {
+          await Haptics.impact({ style: ImpactStyle.Medium });
+        } catch {}
+      })();
     }
   }
 
@@ -142,13 +157,12 @@ export class SensorTaskPage implements OnDestroy {
     if (this.orientationHandler) return;
 
     this.orientationHandler = (e: DeviceOrientationEvent) => {
-      const beta = e.beta; // -180..180 (front/back tilt)
+      const beta = e.beta;
       if (beta === null || beta === undefined) {
         this.upsideDown = false;
         return;
       }
 
-      // upside-down if near 180 or -180 (allow some tolerance)
       const abs = Math.abs(beta);
       this.upsideDown = abs > 150;
     };
@@ -169,15 +183,17 @@ export class SensorTaskPage implements OnDestroy {
       try {
         const res = await anyDeviceOrientation.requestPermission();
         if (res !== 'granted') {
-          // wenn nicht granted -> bleibt progress einfach stehen auf handy
         }
       } catch {
-        // ignore
       }
     }
   }
 
   ngOnDestroy(): void {
     this.cleanup();
+  }
+
+  private currentPath(): string {
+    return this.router.url.split('?')[0];
   }
 }

@@ -1,6 +1,6 @@
 <ion-header translucent="true">
   <ion-toolbar>
-    <ion-title>{{ title }}</ion-title>
+    <ion-title>Aufgabe</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -8,39 +8,31 @@
   <div class="shell">
     <ion-card class="task-card">
       <ion-card-content>
-        <div class="subline">{{ subtitle }}</div>
-
         <div class="task-head">
           <div class="dot"></div>
           <div>
-            <div class="task-title">{{ taskTitle }}</div>
+            <div class="task-title">{{ title }}</div>
             <div class="task-sub">{{ taskDesc }}</div>
           </div>
         </div>
 
         <div class="progress-row">
           <div class="progress-bar">
-            <div class="progress-fill" [style.width.%]="progressRatio * 100"></div>
+            <div class="progress-fill" [class.done]="state === 'completed'"></div>
           </div>
         </div>
 
-        <div class="panel">
-          <div class="panel-top">
-            <div class="panel-left">
-              <div class="metric-label">Gelaufen</div>
-              <div class="metric-value">{{ distanceLabel }}</div>
-            </div>
+        <div *ngIf="state === 'idle'" class="panel">
+          <ion-button expand="block" size="large" class="primary" (click)="startTracking()">
+            {{ buttonText }}
+          </ion-button>
+        </div>
 
-            <div class="panel-right">
-              <ion-button
-                expand="block"
-                size="large"
-                class="primary"
-                [disabled]="state === 'tracking' || state === 'completed'"
-                (click)="startTracking()"
-              >
-                {{ startButtonText }}
-              </ion-button>
+        <div *ngIf="state !== 'idle'" class="panel">
+          <div class="stats">
+            <div class="stat">
+              <div class="stat-label">Distanz</div>
+              <div class="stat-value">{{ distanceLabel }}</div>
             </div>
           </div>
 
@@ -62,6 +54,21 @@
 <ion-footer class="footer" translucent="true">
   <div class="footer-row">
     <ion-button fill="clear" class="footer-btn" (click)="cancelRun()">Abbrechen</ion-button>
-    <ion-button class="footer-btn primary" (click)="skipTask()">Überspringen</ion-button>
+
+    <ion-button
+      class="footer-btn primary"
+      *ngIf="!(state === 'completed')"
+      (click)="skipTask()"
+    >
+      Überspringen
+    </ion-button>
+
+    <ion-button
+      class="footer-btn primary"
+      *ngIf="state === 'completed'"
+      (click)="nextTask()"
+    >
+      Weiter
+    </ion-button>
   </div>
 </ion-footer>

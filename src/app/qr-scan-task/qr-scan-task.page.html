@@ -1,6 +1,6 @@
 <ion-header translucent="true">
   <ion-toolbar>
-    <ion-title>{{ title }}</ion-title>
+    <ion-title>Aufgabe</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -8,10 +8,8 @@
   <div class="shell">
     <ion-card class="task-card">
       <ion-card-content>
-        <div class="subline">{{ subtitle }}</div>
-
         <div class="task-head">
-          <div class="dot green"></div>
+          <div class="dot"></div>
           <div>
             <div class="task-title">{{ taskTitle }}</div>
             <div class="task-sub">{{ taskDesc }}</div>
@@ -20,57 +18,27 @@
 
         <div class="progress-row">
           <div class="progress-bar">
-            <div class="progress-fill"></div>
+            <div class="progress-fill" [class.done]="state === 'completed'"></div>
           </div>
         </div>
 
         <div class="panel">
-          <div class="panel-title-row">
-            <div class="panel-title">Scanner</div>
-          </div>
-
-          <div class="scanner-box">
-            <div class="scanner-inner">
-              <div class="scanner-placeholder" *ngIf="state !== 'scanning'">
-                Kameravorschau
-              </div>
-
-              <div
-                id="qr-region"
-                class="qr-region"
-                [class.hidden]="state !== 'scanning'"
-              ></div>
-            </div>
-          </div>
-
-          <div class="chips">
-            <ion-chip class="chip" [class.ok]="state === 'matched' || state === 'completed'">
-              <span class="dot-mini" [class.ok]="state === 'matched' || state === 'completed'"></span>
-              <ion-label>Status: {{ statusText }}</ion-label>
-            </ion-chip>
-
-            <ion-chip class="chip">
-              <span class="dot-mini ok"></span>
-              <ion-label>Erwartet: "{{ expectedText }}"</ion-label>
-            </ion-chip>
-          </div>
-
-          <ion-button
-            *ngIf="state !== 'matched' && state !== 'completed'"
-            expand="block"
-            size="large"
-            class="primary"
-            (click)="openCamera()"
-          >
+          <ion-button expand="block" size="large" class="primary" (click)="openCamera()">
             Kamera öffnen
           </ion-button>
 
+          <div id="qr-region" class="qr-region"></div>
+
+          <div class="panel-sub">
+            Erwartet: <b>{{ expectedText }}</b><br />
+            Resultat: <b>{{ lastResult ?? '—' }}</b>
+          </div>
+
           <ion-button
-            *ngIf="state === 'matched' || state === 'completed'"
             expand="block"
             size="large"
             class="finish"
-            [disabled]="state === 'completed'"
+            [disabled]="!canFinish || state === 'completed'"
             (click)="finishTask()"
           >
             Abschliessen
@@ -84,6 +52,21 @@
 <ion-footer class="footer" translucent="true">
   <div class="footer-row">
     <ion-button fill="clear" class="footer-btn" (click)="cancelRun()">Abbrechen</ion-button>
-    <ion-button class="footer-btn primary" (click)="skipTask()">Überspringen</ion-button>
+
+    <ion-button
+      class="footer-btn primary"
+      *ngIf="!(state === 'completed')"
+      (click)="skipTask()"
+    >
+      Überspringen
+    </ion-button>
+
+    <ion-button
+      class="footer-btn primary"
+      *ngIf="state === 'completed'"
+      (click)="nextTask()"
+    >
+      Weiter
+    </ion-button>
   </div>
 </ion-footer>

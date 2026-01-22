@@ -1,5 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { TaskNavigationService } from '../services/task-navigation.service';
 import {
   IonHeader,
   IonToolbar,
@@ -13,16 +15,14 @@ import {
   IonLabel,
 } from '@ionic/angular/standalone';
 
-
 import { Geolocation } from '@capacitor/geolocation';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 type TaskState = 'idle' | 'tracking' | 'completed';
 
-
 @Component({
   selector: 'app-geolocation-task',
-  host: { class: 'ion-page'},
+  host: { class: 'ion-page' },
   standalone: true,
   imports: [
     CommonModule,
@@ -42,11 +42,18 @@ type TaskState = 'idle' | 'tracking' | 'completed';
 })
 export class GeolocationTaskPage implements OnDestroy {
 
+  constructor(private nav: TaskNavigationService, private router: Router) {}
+
   state: TaskState = 'idle';
   title = 'Geolocation';
-  intro = 'Beweg dich in den Zielbereich. Sobald du nah genug bist, kannst du bestätigen.';
+  intro =
+    'Beweg dich in den Zielbereich. Sobald du nah genug bist, kannst du bestätigen.';
 
-  target = { lat: 47.0502, lng: 8.3093 };
+  target = {
+  lat: 47.0339,
+  lng: 8.2816
+};
+
   targetRadiusMeters = 10;
 
   lastDistanceMeters: number | null = null;
@@ -54,14 +61,25 @@ export class GeolocationTaskPage implements OnDestroy {
 
   private timer: any = null;
 
-  async startTask() {
+  async ionViewWillEnter(): Promise<void> {
+    // Nur checken/redirecten (keine Requests hier!)
     try {
-      await this.ensurePermissions();
+      const p = await Geolocation.checkPermissions();
+      const ok =
+        p.location === 'granted' || (p as any).coarseLocation === 'granted';
+      if (!ok) this.router.navigateByUrl('/permissions');
+    } catch {
+      // im Web kann checkPermissions anders sein; spätestens getCurrentPosition promptet
+    }
+  }
+
+  async startTask(): Promise<void> {
+    try {
       this.state = 'tracking';
       await this.updateDistanceOnce();
 
       this.timer = setInterval(() => {
-        this.updateDistanceOnce();
+        void this.updateDistanceOnce();
       }, 3000);
     } catch {
       this.state = 'idle';
@@ -70,7 +88,7 @@ export class GeolocationTaskPage implements OnDestroy {
     }
   }
 
-  async finishTask() {
+  async finishTask(): Promise<void> {
     if (!this.canFinish) return;
 
     this.state = 'completed';
@@ -78,26 +96,29 @@ export class GeolocationTaskPage implements OnDestroy {
 
     try {
       await Haptics.impact({ style: ImpactStyle.Medium });
-    } catch {
-    }
+    } catch {}
   }
 
-  cancelRun() {
+  cancelRun(): void {
     this.stopTracking();
-    this.state = 'idle';
-    this.lastDistanceMeters = null;
-    this.statusMode = 'unknown';
+    this.nav.abort();
   }
 
-  skipTask() {
+  skipTask(): void {
     this.stopTracking();
-    this.state = 'completed';
-    this.lastDistanceMeters = null;
-    this.statusMode = 'unknown';
+    this.nav.skip(this.currentPath());
+  }
+
+  nextTask() {
+    this.nav.next(this.currentPath());
   }
 
   get canFinish(): boolean {
-    return this.state === 'tracking' && this.lastDistanceMeters !== null && this.lastDistanceMeters <= this.targetRadiusMeters;
+    return (
+      this.state === 'tracking' &&
+      this.lastDistanceMeters !== null &&
+      this.lastDistanceMeters <= this.targetRadiusMeters
+    );
   }
 
   get distanceLabel(): string {
@@ -107,10 +128,12 @@ export class GeolocationTaskPage implements OnDestroy {
 
   get statusLabel(): string {
     if (this.lastDistanceMeters === null) return 'Unbekannt';
-    return this.lastDistanceMeters <= this.targetRadiusMeters ? 'In Reichweite' : 'Zu weit';
+    return this.lastDistanceMeters <= this.targetRadiusMeters
+      ? 'In Reichweite'
+      : 'Zu weit';
   }
 
-  private stopTracking() {
+  private stopTracking(): void {
     if (this.timer) {
       clearInterval(this.timer);
       this.timer = null;
@@ -130,7 +153,6 @@ export class GeolocationTaskPage implements OnDestroy {
       const ok2 = req.location === 'granted' || req.coarseLocation === 'granted';
       if (!ok2) throw new Error('No permission');
     } catch {
-      // Web fallback: Browser prompt passiert spätestens beim getCurrentPosition.
       return;
     }
   }
@@ -156,7 +178,12 @@ export class GeolocationTaskPage implements OnDestroy {
     }
   }
 
-  private haversineMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  private haversineMeters(
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number
+  ): number {
     const R = 6371000;
     const toRad = (v: number) => (v * Math.PI) / 180;
 
@@ -165,7 +192,9 @@ export class GeolocationTaskPage implements OnDestroy {
 
     const a =
       Math.sin(dLat / 2) ** 2 +
-      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+      Math.cos(toRad(lat1)) *
+        Math.cos(toRad(lat2)) *
+        Math.sin(dLon / 2) ** 2;
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
@@ -173,5 +202,9 @@ export class GeolocationTaskPage implements OnDestroy {
 
   ngOnDestroy(): void {
     this.stopTracking();
+  }
+
+  private currentPath(): string {
+    return this.router.url.split('?')[0];
   }
 }

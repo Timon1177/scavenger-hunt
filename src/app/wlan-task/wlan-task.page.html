@@ -1,6 +1,6 @@
 <ion-header translucent="true">
   <ion-toolbar>
-    <ion-title>{{ title }}</ion-title>
+    <ion-title>Aufgabe</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -8,8 +8,6 @@
   <div class="shell">
     <ion-card class="task-card">
       <ion-card-content>
-        <div class="subline">{{ subtitle }}</div>
-
         <div class="task-head">
           <div class="dot"></div>
           <div>
@@ -20,45 +18,33 @@
 
         <div class="progress-row">
           <div class="progress-bar">
-            <div class="progress-fill"></div>
+            <div class="progress-fill" [class.done]="state === 'completed'"></div>
           </div>
         </div>
 
         <div class="panel">
-          <div class="steps">
-            <div class="step">
-              <div class="left">Schritt 1</div>
-              <div class="right">
-                <span class="mini" [class.on]="step1Dot === 'on'"></span>
-                <span>Verbinden</span>
-              </div>
-            </div>
-
-            <div class="step">
-              <div class="left">Schritt 2</div>
-              <div class="right">
-                <span class="mini" [class.on]="step2Dot === 'on'"></span>
-                <span>Trennen</span>
-              </div>
-            </div>
-          </div>
-
           <ion-button
-            *ngIf="state === 'idle'"
             expand="block"
             size="large"
             class="primary"
+            [disabled]="state !== 'idle'"
             (click)="startTask()"
           >
-            Aufgabe starten
+            Task starten
           </ion-button>
+
+          <div class="panel-sub">
+            Schritt 1: WLAN verbinden <b>{{ step1Connected ? '✓' : '—' }}</b><br />
+            Schritt 2: WLAN trennen <b>{{ step2Disconnected ? '✓' : '—' }}</b>
+          </div>
 
           <ion-button
             *ngIf="state !== 'idle'"
             expand="block"
             size="large"
             class="finish"
-            [disabled]="!canFinish"
+            [class.primary]="canFinish && state !== 'completed'"
+            [disabled]="!canFinish || state === 'completed'"
             (click)="finishTask()"
           >
             Abschliessen
@@ -71,11 +57,22 @@
 
 <ion-footer class="footer" translucent="true">
   <div class="footer-row">
-    <ion-button fill="clear" class="footer-btn" (click)="cancelRun()"
-      >Abbrechen</ion-button
+    <ion-button fill="clear" class="footer-btn" (click)="cancelRun()">Abbrechen</ion-button>
+
+    <ion-button
+      class="footer-btn primary"
+      *ngIf="state !== 'completed'"
+      (click)="skipTask()"
     >
-    <ion-button class="footer-btn primary" (click)="skipTask()"
-      >Überspringen</ion-button
+      Überspringen
+    </ion-button>
+
+    <ion-button
+      class="footer-btn primary"
+      *ngIf="state === 'completed'"
+      (click)="nextTask()"
     >
+      Weiter
+    </ion-button>
   </div>
 </ion-footer>

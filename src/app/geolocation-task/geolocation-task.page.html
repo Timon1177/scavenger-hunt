@@ -1,4 +1,3 @@
-
 <ion-header translucent="true">
   <ion-toolbar>
     <ion-title>Aufgabe</ion-title>
@@ -80,6 +79,21 @@
 <ion-footer class="footer" translucent="true">
   <div class="footer-row">
     <ion-button fill="clear" class="footer-btn" (click)="cancelRun()">Abbrechen</ion-button>
-    <ion-button class="footer-btn primary" (click)="skipTask()">Überspringen</ion-button>
+
+    <ion-button
+      class="footer-btn primary"
+      *ngIf="!(state === 'completed')"
+      (click)="skipTask()"
+    >
+      Überspringen
+    </ion-button>
+
+    <ion-button
+      class="footer-btn primary"
+      *ngIf="state === 'completed'"
+      (click)="nextTask()"
+    >
+      Weiter
+    </ion-button>
   </div>
 </ion-footer>

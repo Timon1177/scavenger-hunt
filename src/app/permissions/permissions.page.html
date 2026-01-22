@@ -1,12 +1,12 @@
 <ion-header translucent="true">
   <ion-toolbar>
-    <ion-title>{{ title }}</ion-title>
+    <ion-title>Berechtigungen</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content fullscreen="true" class="page">
   <div class="shell">
-      <ion-card class="task-card">
+    <ion-card class="task-card">
       <ion-card-content>
         <div class="subline">{{ subtitle }}</div>
 
@@ -17,20 +17,30 @@
         <div class="perm-panel">
           <div class="perm-row">
             <div class="left">
-              <span class="dot-mini" [class.ok]="dotClass(locationPerm)==='ok'"></span>
+              <span
+                class="dot-mini"
+                [class.ok]="dotClass(locationPerm) === 'ok'"
+                [class.bad]="dotClass(locationPerm) === 'bad'"
+              ></span>
               <span>Standort</span>
             </div>
-            <div class="pill" [class.ok]="locationPerm==='granted'">
+
+            <div class="pill" [class.ok]="locationPerm === 'granted'">
               {{ labelFor(locationPerm) }}
             </div>
           </div>
 
           <div class="perm-row">
             <div class="left">
-              <span class="dot-mini" [class.ok]="dotClass(cameraPerm)==='ok'"></span>
+              <span
+                class="dot-mini"
+                [class.ok]="dotClass(cameraPerm) === 'ok'"
+                [class.bad]="dotClass(cameraPerm) === 'bad'"
+              ></span>
               <span>Kamera</span>
             </div>
-            <div class="pill" [class.ok]="cameraPerm==='granted'">
+
+            <div class="pill" [class.ok]="cameraPerm === 'granted'">
               {{ labelFor(cameraPerm) }}
             </div>
           </div>
@@ -47,7 +57,12 @@
 <ion-footer class="footer" translucent="true">
   <div class="footer-row">
     <ion-button class="footer-btn" fill="clear" (click)="back()">Zurück</ion-button>
-    <ion-button class="footer-btn primary" [disabled]="!canContinue" (click)="next()">
+
+    <ion-button
+      class="footer-btn primary"
+      [disabled]="!canContinue"
+      (click)="next()"
+    >
       Weiter
     </ion-button>
   </div>
