@@ -37,7 +37,12 @@ type UiState = 'idle' | 'running' | 'completed';
   styleUrl: './wlan-task.page.scss',
 })
 export class WlanTaskPage implements OnDestroy {
-  constructor(private nav: TaskNavigationService, private router: Router) {}
+  constructor(
+    private nav: TaskNavigationService,
+    private router: Router,
+  ) {}
+
+  private leaderboardService = inject(LeaderboardService)
 
   taskTitle = 'WLAN an / aus';
   taskDesc = 'Verbinde dich mit WLAN und trenne es wieder.';
@@ -62,13 +67,16 @@ export class WlanTaskPage implements OnDestroy {
 
     await this.syncOnce();
 
-    const listener = await Network.addListener('networkStatusChange', async (status) => {
-      this.applyStatus(status);
+    const listener = await Network.addListener(
+      'networkStatusChange',
+      async (status) => {
+        this.applyStatus(status);
 
-      if (this.canFinish && this.state !== 'completed') {
-        await this.markCompleted();
-      }
-    });
+        if (this.canFinish && this.state !== 'completed') {
+          await this.markCompleted();
+        }
+      },
+    );
 
     this.removeListener = async () => {
       listener.remove();
@@ -78,6 +86,7 @@ export class WlanTaskPage implements OnDestroy {
   async finishTask(): Promise<void> {
     if (!this.canFinish) return;
     await this.markCompleted();
+    this.leaderboardService.increasePoints(false);
   }
 
   private async markCompleted(): Promise<void> {

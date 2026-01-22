@@ -8,9 +8,21 @@ import { Preferences } from '@capacitor/preferences';
   providedIn: 'root',
 })
 export class LeaderboardService {
-  public user = "";
-  public potato = 0;
-  public schnitzel = 0;
+  #user = "";
+  #potato = 0;
+  #schnitzel = 0;
+
+  public get user() : string {
+    return this.#user
+  }
+
+  public get potato() : number {
+    return this.#potato
+  }
+
+  public get schnitzel() : number {
+    return this.#schnitzel
+  }
 
   getHunters(): Observable<iHunter[]> {
     const hunters = of(HUNTERS);
@@ -18,11 +30,11 @@ export class LeaderboardService {
   }
 
   async setUser(newUser: string) {
-    this.user = newUser
+    this.#user = newUser
   }
 
   increasePoints(gotPotato: boolean) {
-    this.schnitzel += 1;
-    if (gotPotato == true) this.potato += 1;
+    this.#schnitzel += 1;
+    if (gotPotato == true) this.#potato += 1;
   }
 }

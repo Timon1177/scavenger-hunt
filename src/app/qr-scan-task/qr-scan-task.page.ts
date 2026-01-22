@@ -1,5 +1,6 @@
 // qr-scan-task.page.ts
-import { Component, OnDestroy, NgZone } from '@angular/core';
+import { NgZone } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TaskNavigationService } from '../services/task-navigation.service';
@@ -12,13 +13,12 @@ import {
   IonCardContent,
   IonButton,
   IonFooter,
-  IonChip,
-  IonLabel,
 } from '@ionic/angular/standalone';
 
 import { Camera } from '@capacitor/camera';
 import { Html5Qrcode } from 'html5-qrcode';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { LeaderboardService } from '../leaderboard.service';
 
 type TaskState = 'idle' | 'scanning' | 'matched' | 'completed';
 
@@ -35,8 +35,6 @@ type TaskState = 'idle' | 'scanning' | 'matched' | 'completed';
     IonCardContent,
     IonButton,
     IonFooter,
-    IonChip,
-    IonLabel,
   ],
   templateUrl: './qr-scan-task.page.html',
   styleUrl: './qr-scan-task.page.scss',
@@ -48,6 +46,7 @@ export class QrScanTaskPage implements OnDestroy {
     private router: Router,
     private zone: NgZone
   ) {}
+  private leaderboardService = inject(LeaderboardService)
 
   title = 'QR Scan';
   subtitle = 'Pflichtaufgabe (!)';
@@ -108,12 +107,12 @@ export class QrScanTaskPage implements OnDestroy {
           });
 
           await this.stopCamera();
-
+          this.leaderboardService.increasePoints(false)
           try {
             await Haptics.impact({ style: ImpactStyle.Medium });
           } catch {}
         },
-        () => {}
+        () => {},
       );
     } catch {
       this.state = 'idle';
