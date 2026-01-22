@@ -54,9 +54,9 @@ export class GeolocationTaskPage implements OnDestroy {
     'Beweg dich in den Zielbereich. Sobald du nah genug bist, kannst du bestätigen.';
 
   target = {
-    lat: 47.0339,
-    lng: 8.2816,
-  };
+  lat: 47.02750,
+  lng: 8.30101
+};
 
   private leaderboardService = inject(LeaderboardService);
 

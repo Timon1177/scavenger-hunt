@@ -18,6 +18,7 @@ import {
 import { addIcons } from 'ionicons';
 import { radioButtonOn } from 'ionicons/icons';
 import { LeaderboardService } from '../leaderboard.service';
+import { HuntTimerService } from '../services/hunt-timer.service';
 
 @Component({
   selector: 'app-home',
@@ -46,6 +47,7 @@ export class HomePage {
   @ViewChild('errorAlert') errorAlert!: IonAlert;
 
   private leaderboardService = inject(LeaderboardService);
+  private huntTimer = inject(HuntTimerService);
 
   constructor(private router: Router) {
     addIcons({ radioButtonOn });
@@ -77,7 +79,9 @@ export class HomePage {
         }
         await this.nameAlert.dismiss();
 
-        this.leaderboardService.setUser(name)
+        this.leaderboardService.setUser(name);
+
+        await this.huntTimer.start();
 
         this.router.navigate(['/permissions']);
         return true;

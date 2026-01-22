@@ -1,5 +1,5 @@
 // qr-scan-task.page.ts
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TaskNavigationService } from '../services/task-navigation.service';
@@ -43,6 +43,7 @@ export class QrScanTaskPage implements OnInit, OnDestroy {
   constructor(
     private nav: TaskNavigationService,
     private router: Router,
+    private zone: NgZone
   ) {}
 
   private leaderboardService = inject(LeaderboardService);
@@ -69,7 +70,7 @@ export class QrScanTaskPage implements OnInit, OnDestroy {
   taskDesc =
     'Scanne den QR-Code und vergleiche den Inhalt mit dem erwarteten Text.';
 
-  expectedText = 'POSTEN-03';
+  expectedText = 'https://de.wikipedia.org';
 
   state: TaskState = 'idle';
   lastResult: string | null = null;
@@ -82,9 +83,7 @@ export class QrScanTaskPage implements OnInit, OnDestroy {
       const p = await Camera.checkPermissions();
       const ok = p.camera === 'granted';
       if (!ok) this.router.navigateByUrl('/permissions');
-    } catch {
-      // html5-qrcode wird spätestens beim start() prompten
-    }
+    } catch {}
   }
 
   get statusText(): string {
@@ -110,12 +109,18 @@ export class QrScanTaskPage implements OnInit, OnDestroy {
         { facingMode: 'environment' },
         { fps: 10, qrbox: { width: 240, height: 240 }, aspectRatio: 1.0 },
         async (decodedText: string) => {
-          this.lastResult = decodedText;
+          // WICHTIG: UI-Updates in Angular-Zone, sonst bleibt Button disabled
+          this.zone.run(() => {
+            this.lastResult = decodedText;
+          });
 
           const ok = decodedText.trim() === this.expectedText.trim();
           if (!ok) return;
 
-          this.state = 'matched';
+          this.zone.run(() => {
+            this.state = 'matched';
+          });
+
           await this.stopCamera();
           this.leaderboardService.increasePoints(this.getsPotato);
           try {
@@ -131,9 +136,10 @@ export class QrScanTaskPage implements OnInit, OnDestroy {
   }
 
   async finishTask(): Promise<void> {
-    if (!this.canFinish) return;
-    this.state = 'completed';
-  }
+  if (!this.canFinish) return;
+  this.state = 'completed';
+  this.nav.next(this.currentPath());
+}
 
   async cancelRun(): Promise<void> {
     await this.stopCamera();
