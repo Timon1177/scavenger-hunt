@@ -52,7 +52,6 @@ export class HomePage {
     addIcons({ radioButtonOn });
   }
 
-  pendingName: string | null = null;
 
   public alertButtons = [
     { text: 'Abbrechen', role: 'cancel' },
