@@ -47,7 +47,7 @@ export class PermissionsPage {
   cameraPerm: PermState = 'unknown';
 
   ionViewWillEnter(): void {
-    // void this.refreshPermissions();
+    void this.refreshPermissions();
   }
 
   get canContinue(): boolean {
