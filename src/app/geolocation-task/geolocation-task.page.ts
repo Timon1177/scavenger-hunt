@@ -6,19 +6,16 @@ import {
   IonTitle,
   IonContent,
   IonCard,
-  IonCardHeader,
   IonCardContent,
   IonButton,
   IonFooter,
   IonChip,
   IonLabel,
-  IonIcon,
 } from '@ionic/angular/standalone';
 
 
 import { Geolocation } from '@capacitor/geolocation';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { ActivatedRoute } from '@angular/router';
 
 type TaskState = 'idle' | 'tracking' | 'completed';
 
@@ -34,13 +31,11 @@ type TaskState = 'idle' | 'tracking' | 'completed';
     IonTitle,
     IonContent,
     IonCard,
-    IonCardHeader,
     IonCardContent,
     IonButton,
     IonFooter,
     IonChip,
     IonLabel,
-    IonIcon,
   ],
   templateUrl: './geolocation-task.page.html',
   styleUrls: ['./geolocation-task.page.scss'],

@@ -1,15 +1,9 @@
-import { Component, OnInit,inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   IonCard,
   IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardSubtitle,
-  IonIcon,
-  IonChip,
-  IonLabel,
   IonHeader,
   IonToolbar,
   IonTitle,
@@ -28,14 +22,8 @@ import { iHunter } from '../ihunter';
   styleUrls: ['./leaderboard.page.scss'],
   standalone: true,
   imports: [
-    IonCardTitle,
-    IonCardSubtitle,
     IonCard,
     IonCardContent,
-    IonCardHeader,
-    IonIcon,
-    IonChip,
-    IonLabel,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -53,48 +41,49 @@ export class LeaderboardPage implements OnInit {
     addIcons({ radioButtonOn });
   }
 
-  private leaderboardService = inject(LeaderboardService)
+  private leaderboardService = inject(LeaderboardService);
 
   title = 'Top Läufe';
-  intro = 'Ergebnisse aus dem Online-Leaderboard. Darunter deine gespeicherten Durchführungen.';
+  intro =
+    'Ergebnisse aus dem Online-Leaderboard. Darunter deine gespeicherten Durchführungen.';
 
   getHunters(): void {
-  this.leaderboardService.getHunters()
-      .subscribe(hunters => this.hunters = hunters);
+    this.leaderboardService
+      .getHunters()
+      .subscribe((hunters) => (this.hunters = hunters));
   }
 
   formatTime(minutes: number): string {
-  const totalSeconds = Math.floor(minutes * 60);
+    const totalSeconds = Math.floor(minutes * 60);
 
-  const hours = Math.floor(totalSeconds / 3600);
-  const remaining = totalSeconds % 3600;
-  const mins = Math.floor(remaining / 60);
-  const seconds = remaining % 60;
+    const hours = Math.floor(totalSeconds / 3600);
+    const remaining = totalSeconds % 3600;
+    const mins = Math.floor(remaining / 60);
+    const seconds = remaining % 60;
 
-  const pad = (n: number) => n.toString().padStart(2, "0");
+    const pad = (n: number) => n.toString().padStart(2, '0');
 
-  return `${pad(hours)}:${pad(mins)}:${pad(seconds)}`;
+    return `${pad(hours)}:${pad(mins)}:${pad(seconds)}`;
   }
 
-  formatDate(huntDay: Date){
+  formatDate(huntDay: Date) {
     const today = Date.now();
 
-    if(today- huntDay.getTime() <= 0 ){
-      return "The fucking future"
+    if (today - huntDay.getTime() <= 0) {
+      return 'The fucking future';
     }
-    if(today- huntDay.getTime() <= 86400000 ){
-      return "Heute"
+    if (today - huntDay.getTime() <= 86400000) {
+      return 'Heute';
+    } else if (today - huntDay.getTime() <= 172800000) {
+      return 'Gestern';
+    } else {
+      return (
+        huntDay.getDate().toString() + ' ' + (huntDay.getMonth() + 1).toString()
+      );
     }
-    else if(today- huntDay.getTime() <= 172800000 ){
-      return "Gestern"
-    }
-    else{
-      return (huntDay.getDate().toString() + " " + (huntDay.getMonth()+1).toString())
-    }
-
   }
 
   ngOnInit() {
-    this.getHunters()
+    this.getHunters();
   }
 }

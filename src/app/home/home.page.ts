@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router,RouterLink } from '@angular/router';
 import {
   IonCard,
   IonCardContent,
@@ -10,7 +10,6 @@ import {
   IonChip,
   IonLabel,
   IonHeader,
-  IonItem,
   IonToolbar,
   IonTitle,
   IonContent,
@@ -35,13 +34,13 @@ import { radioButtonOn } from 'ionicons/icons';
     IonIcon,
     IonChip,
     IonLabel,
-    IonItem,
     IonHeader,
     IonToolbar,
     IonTitle,
     IonContent,
     IonButton,
     IonAlert,
+    RouterLink
   ],
 })
 export class HomePage {
@@ -78,7 +77,7 @@ export class HomePage {
         }
         await this.nameAlert.dismiss();
 
-        this.router.navigate(['/permisions']);
+        this.router.navigate(['/permissions']);
         return true;
       },
     },

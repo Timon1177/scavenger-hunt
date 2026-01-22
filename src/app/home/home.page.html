@@ -18,26 +18,26 @@
 
   <ion-card>
     <ion-button id="new-hunt">Schnitzeljagd starten</ion-button>
-
-    <ion-alert
-      #nameAlert
-      trigger="new-hunt"
-      header="Dein Name"
-      [buttons]="alertButtons"
-      [inputs]="alertInputs"
-      backdropDismiss="false"
-    ></ion-alert>
-
-    <ion-alert
-      #errorAlert
-      header="Fehler"
-      message="Bitte gib zuerst deinen Namen ein."
-      [buttons]="['OK']"
-    ></ion-alert>
-
     <ion-chip class="perms-notice">
       <ion-icon name="radio-button-on" color="warning"></ion-icon>
       <ion-label>Kamera & Standort benötig</ion-label>
     </ion-chip>
+    <a routerLink="/permissions">User profile</a>
   </ion-card>
+
+  <ion-alert
+    #nameAlert
+    trigger="new-hunt"
+    header="Dein Name"
+    [buttons]="alertButtons"
+    [inputs]="alertInputs"
+    backdropDismiss="false"
+  ></ion-alert>
+
+  <ion-alert
+    #errorAlert
+    header="Fehler"
+    message="Bitte gib zuerst deinen Namen ein."
+    [buttons]="['OK']"
+  ></ion-alert>
 </ion-content>

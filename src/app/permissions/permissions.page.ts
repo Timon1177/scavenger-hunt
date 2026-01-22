@@ -8,7 +8,7 @@ import {
   IonCard,
   IonCardContent,
   IonButton,
-  IonFooter
+  IonFooter,
 } from '@ionic/angular/standalone';
 
 import { Geolocation } from '@capacitor/geolocation';
@@ -28,11 +28,13 @@ type PermState = 'unknown' | 'granted' | 'denied';
     IonCard,
     IonCardContent,
     IonButton,
-    IonFooter
+    IonFooter,
   ],
   templateUrl: './permissions.page.html',
   styleUrl: './permissions.page.scss',
 })
+//export class PermissionsPage {}
+
 export class PermissionsPage {
   title = 'Berechtigungen';
   subtitle = "Einmal erlauben, dann läuft's.";
@@ -113,3 +115,4 @@ export class PermissionsPage {
     return state === 'granted' ? 'ok' : 'bad';
   }
 }
+/**/

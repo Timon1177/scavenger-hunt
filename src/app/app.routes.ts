@@ -12,7 +12,7 @@ export const routes: Routes = [
   },
   
   {
-    path: 'permisions',
+    path: 'permissions',
     loadComponent: () => import('./permissions/permissions.page').then( m => m.PermissionsPage)
   },
   {
