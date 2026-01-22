@@ -2,7 +2,7 @@ import { Component, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TaskNavigationService } from '../services/task-navigation.service';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import {
   IonHeader,
   IonToolbar,
@@ -37,7 +37,7 @@ type TaskState = 'idle' | 'running' | 'completed';
     IonLabel,
   ],
   templateUrl: './sensor-task.page.html',
-  styleUrl: './sensor-task.page.scss',
+  styleUrls: ['./sensor-task.page.scss'], // ✅ plural
 })
 export class SensorTaskPage implements OnDestroy {
   constructor(
@@ -60,7 +60,6 @@ export class SensorTaskPage implements OnDestroy {
 
   private requiredHoldMs = 5000;
   private holdMs = 0;
-
   private lastTs = 0;
 
   private upsideDown = false;
@@ -87,12 +86,6 @@ export class SensorTaskPage implements OnDestroy {
     return 'Erkennung: wartet';
   }
 
-  get statusMode(): 'wait' | 'run' | 'done' {
-    if (this.state === 'completed') return 'done';
-    if (this.state === 'running') return 'run';
-    return 'wait';
-  }
-
   get canFinish(): boolean {
     return this.state === 'completed';
   }
@@ -100,14 +93,14 @@ export class SensorTaskPage implements OnDestroy {
   async startTask(): Promise<void> {
     if (this.state === 'running' || this.state === 'completed') return;
 
+    await this.requestMotionPermissionIfNeeded();
+
     this.state = 'running';
     this.progress = 0;
     this.holdMs = 0;
     this.lastTs = performance.now();
 
-    await this.requestMotionPermissionIfNeeded();
     this.attachOrientationListener();
-
     this.tickTimer = setInterval(() => this.tick(), 80);
   }
 
@@ -118,6 +111,7 @@ export class SensorTaskPage implements OnDestroy {
     } catch {}
     this.state = 'completed';
     this.leaderboardService.increasePoints(this.getsPotato);
+    this.nav.next(this.currentPath());
   }
 
   cancelRun(): void {
@@ -147,8 +141,7 @@ export class SensorTaskPage implements OnDestroy {
       this.holdMs = Math.max(0, this.holdMs - dt * 1.5);
     }
 
-    const ratio =
-      this.requiredHoldMs === 0 ? 1 : this.holdMs / this.requiredHoldMs;
+    const ratio = this.requiredHoldMs === 0 ? 1 : this.holdMs / this.requiredHoldMs;
     this.progress = Math.round(Math.max(0, Math.min(100, ratio * 100)));
 
     if (this.progress >= 100) {
@@ -186,9 +179,7 @@ export class SensorTaskPage implements OnDestroy {
         this.upsideDown = false;
         return;
       }
-
-      const abs = Math.abs(beta);
-      this.upsideDown = abs > 150;
+      this.upsideDown = Math.abs(beta) > 150;
     };
 
     window.addEventListener('deviceorientation', this.orientationHandler, true);
@@ -196,11 +187,7 @@ export class SensorTaskPage implements OnDestroy {
 
   private detachOrientationListener(): void {
     if (!this.orientationHandler) return;
-    window.removeEventListener(
-      'deviceorientation',
-      this.orientationHandler,
-      true,
-    );
+    window.removeEventListener('deviceorientation', this.orientationHandler, true);
     this.orientationHandler = undefined;
     this.upsideDown = false;
   }
@@ -209,9 +196,7 @@ export class SensorTaskPage implements OnDestroy {
     const anyDeviceOrientation = DeviceOrientationEvent as any;
     if (typeof anyDeviceOrientation?.requestPermission === 'function') {
       try {
-        const res = await anyDeviceOrientation.requestPermission();
-        if (res !== 'granted') {
-        }
+        await anyDeviceOrientation.requestPermission();
       } catch {}
     }
   }
