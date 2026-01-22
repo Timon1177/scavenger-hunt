@@ -1,5 +1,5 @@
 // qr-scan-task.page.ts
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TaskNavigationService } from '../services/task-navigation.service';
@@ -43,7 +43,11 @@ type TaskState = 'idle' | 'scanning' | 'matched' | 'completed';
 })
 export class QrScanTaskPage implements OnDestroy {
 
-  constructor(private nav: TaskNavigationService, private router: Router) {}
+  constructor(
+    private nav: TaskNavigationService,
+    private router: Router,
+    private zone: NgZone
+  ) {}
 
   title = 'QR Scan';
   subtitle = 'Pflichtaufgabe (!)';
@@ -52,7 +56,7 @@ export class QrScanTaskPage implements OnDestroy {
   taskDesc =
     'Scanne den QR-Code und vergleiche den Inhalt mit dem erwarteten Text.';
 
-  expectedText = 'POSTEN-03';
+  expectedText = 'https://de.wikipedia.org';
 
   state: TaskState = 'idle';
   lastResult: string | null = null;
@@ -61,14 +65,11 @@ export class QrScanTaskPage implements OnDestroy {
   private readonly regionId = 'qr-region';
 
   async ionViewWillEnter(): Promise<void> {
-    // Nur checken/redirecten (keine Requests hier!)
     try {
       const p = await Camera.checkPermissions();
       const ok = p.camera === 'granted';
       if (!ok) this.router.navigateByUrl('/permissions');
-    } catch {
-      // html5-qrcode wird spätestens beim start() prompten
-    }
+    } catch {}
   }
 
   get statusText(): string {
@@ -94,12 +95,18 @@ export class QrScanTaskPage implements OnDestroy {
         { facingMode: 'environment' },
         { fps: 10, qrbox: { width: 240, height: 240 }, aspectRatio: 1.0 },
         async (decodedText: string) => {
-          this.lastResult = decodedText;
+          // WICHTIG: UI-Updates in Angular-Zone, sonst bleibt Button disabled
+          this.zone.run(() => {
+            this.lastResult = decodedText;
+          });
 
           const ok = decodedText.trim() === this.expectedText.trim();
           if (!ok) return;
 
-          this.state = 'matched';
+          this.zone.run(() => {
+            this.state = 'matched';
+          });
+
           await this.stopCamera();
 
           try {
@@ -115,9 +122,10 @@ export class QrScanTaskPage implements OnDestroy {
   }
 
   async finishTask(): Promise<void> {
-    if (!this.canFinish) return;
-    this.state = 'completed';
-  }
+  if (!this.canFinish) return;
+  this.state = 'completed';
+  this.nav.next(this.currentPath());
+}
 
   async cancelRun(): Promise<void> {
     await this.stopCamera();
