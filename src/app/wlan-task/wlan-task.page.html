@@ -54,7 +54,7 @@
           </ion-button>
 
           <ion-button
-            *ngIf="state !== 'idle'" 
+            *ngIf="state !== 'idle'"
             expand="block"
             size="large"
             class="finish"
@@ -71,7 +71,11 @@
 
 <ion-footer class="footer" translucent="true">
   <div class="footer-row">
-    <ion-button fill="clear" class="footer-btn" (click)="cancelRun()">Abbrechen</ion-button>
-    <ion-button class="footer-btn primary" (click)="skipTask()">Überspringen</ion-button>
+    <ion-button fill="clear" class="footer-btn" (click)="cancelRun()"
+      >Abbrechen</ion-button
+    >
+    <ion-button class="footer-btn primary" (click)="skipTask()"
+      >Überspringen</ion-button
+    >
   </div>
 </ion-footer>

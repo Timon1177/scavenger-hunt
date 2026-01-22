@@ -35,7 +35,7 @@ type PermState = 'unknown' | 'granted' | 'denied';
 })
 
 export class PermissionsPage implements OnInit{
-
+  
   ngOnInit(): void {
     
   }

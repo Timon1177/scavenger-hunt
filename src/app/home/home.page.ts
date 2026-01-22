@@ -1,5 +1,5 @@
-import { Component, ViewChild } from '@angular/core';
-import { Router,RouterLink } from '@angular/router';
+import { Component, ViewChild, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   IonCard,
   IonCardContent,
@@ -18,6 +18,7 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { radioButtonOn } from 'ionicons/icons';
+import { LeaderboardService } from '../leaderboard.service';
 
 @Component({
   selector: 'app-home',
@@ -40,13 +41,13 @@ import { radioButtonOn } from 'ionicons/icons';
     IonContent,
     IonButton,
     IonAlert,
-    RouterLink
   ],
 })
 export class HomePage {
   @ViewChild('nameAlert') nameAlert!: IonAlert;
   @ViewChild('errorAlert') errorAlert!: IonAlert;
 
+  private leaderboardService = inject(LeaderboardService);
 
   constructor(private router: Router) {
     addIcons({ radioButtonOn });
@@ -76,6 +77,8 @@ export class HomePage {
           return false;
         }
         await this.nameAlert.dismiss();
+
+        this.leaderboardService.setUser(name)
 
         this.router.navigate(['/permissions']);
         return true;

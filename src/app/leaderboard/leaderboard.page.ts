@@ -41,7 +41,7 @@ export class LeaderboardPage implements OnInit {
     addIcons({ radioButtonOn });
   }
 
-  private leaderboardService = inject(LeaderboardService);
+  public leaderboardService = inject(LeaderboardService);
 
   title = 'Top Läufe';
   intro =

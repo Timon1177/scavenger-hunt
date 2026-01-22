@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonHeader,
@@ -8,11 +8,12 @@ import {
   IonCard,
   IonCardContent,
   IonButton,
-  IonFooter
+  IonFooter,
 } from '@ionic/angular/standalone';
 
 import { Network, type ConnectionStatus } from '@capacitor/network';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { LeaderboardService } from '../leaderboard.service';
 
 type UiState = 'idle' | 'running' | 'completed';
 
@@ -28,7 +29,7 @@ type UiState = 'idle' | 'running' | 'completed';
     IonCard,
     IonCardContent,
     IonButton,
-    IonFooter
+    IonFooter,
   ],
   templateUrl: './wlan-task.page.html',
   styleUrl: './wlan-task.page.scss',
@@ -67,18 +68,17 @@ export class WlanTaskPage implements OnDestroy {
 
     await this.syncOnce();
 
-const handler = async (status: ConnectionStatus) => {
-  this.applyStatus(status);
+    const handler = async (status: ConnectionStatus) => {
+      this.applyStatus(status);
 
-  if (this.canFinish) {
-    this.state = 'completed';
-    await this.cleanup();
-    try {
-      await Haptics.impact({ style: ImpactStyle.Medium });
-    } catch {}
-  }
-};
-
+      if (this.canFinish) {
+        this.state = 'completed';
+        await this.cleanup();
+        try {
+          await Haptics.impact({ style: ImpactStyle.Medium });
+        } catch {}
+      }
+    };
 
     const handle = await Network.addListener('networkStatusChange', handler);
     this.removeListener = async () => {
@@ -114,7 +114,8 @@ const handler = async (status: ConnectionStatus) => {
   }
 
   private applyStatus(status: ConnectionStatus): void {
-    const isWifi = status.connected === true && status.connectionType === 'wifi';
+    const isWifi =
+      status.connected === true && status.connectionType === 'wifi';
 
     if (!this.step1Connected) {
       if (isWifi) this.step1Connected = true;
