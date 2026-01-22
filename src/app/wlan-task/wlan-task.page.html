@@ -8,17 +8,12 @@
   <div class="shell">
     <ion-card class="task-card">
       <ion-card-content>
+
         <div class="task-head">
           <div class="dot"></div>
           <div>
             <div class="task-title">{{ taskTitle }}</div>
             <div class="task-sub">{{ taskDesc }}</div>
-          </div>
-        </div>
-
-        <div class="progress-row">
-          <div class="progress-bar">
-            <div class="progress-fill" [class.done]="state === 'completed'"></div>
           </div>
         </div>
 
@@ -34,45 +29,48 @@
           </ion-button>
 
           <div class="panel-sub">
-            Schritt 1: WLAN verbinden <b>{{ step1Connected ? '✓' : '—' }}</b><br />
-            Schritt 2: WLAN trennen <b>{{ step2Disconnected ? '✓' : '—' }}</b>
+            WLAN verbunden:
+            <b>{{ wasConnected ? '✓' : '—' }}</b><br />
+            WLAN getrennt:
+            <b>{{ wasDisconnected ? '✓' : '—' }}</b>
           </div>
 
+          <!-- Abschliessen: wird blau sobald erfolgreich -->
           <ion-button
-            *ngIf="state !== 'idle'"
             expand="block"
             size="large"
             class="finish"
-            [class.primary]="canFinish && state !== 'completed'"
-            [disabled]="!canFinish || state === 'completed'"
+            [class.primary]="canFinish"
+            [disabled]="!canFinish"
             (click)="finishTask()"
           >
             Abschliessen
           </ion-button>
         </div>
+
       </ion-card-content>
     </ion-card>
   </div>
 </ion-content>
 
 <ion-footer class="footer" translucent="true">
-  <div class="footer-row">
-    <ion-button fill="clear" class="footer-btn" (click)="cancelRun()">Abbrechen</ion-button>
-
+  <div class="footer-row center">
+    <!-- Zurück immer zentriert -->
     <ion-button
-      class="footer-btn primary"
-      *ngIf="state !== 'completed'"
+      fill="clear"
+      class="footer-btn back-btn"
+      (click)="cancelRun()"
+    >
+      Zurück
+    </ion-button>
+
+    <!-- Überspringen nur solange NICHT erfolgreich -->
+    <ion-button
+      class="footer-btn primary skip-btn"
+      *ngIf="!canFinish"
       (click)="skipTask()"
     >
       Überspringen
-    </ion-button>
-
-    <ion-button
-      class="footer-btn primary"
-      *ngIf="state === 'completed'"
-      (click)="nextTask()"
-    >
-      Weiter
     </ion-button>
   </div>
 </ion-footer>
