@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
 import {
   IonHeader,
   IonToolbar,
@@ -12,6 +11,9 @@ import {
   IonFooter,
 } from '@ionic/angular/standalone';
 import { LeaderboardService } from '../leaderboard.service';
+import { Router } from '@angular/router';
+import { HuntTimerService } from '../services/hunt-timer.service';
+import { TaskNavigationService } from '../services/task-navigation.service';
 
 @Component({
   selector: 'app-result',
@@ -31,9 +33,6 @@ import { LeaderboardService } from '../leaderboard.service';
   styleUrl: './result.page.scss',
 })
 export class ResultPage {
-
-  constructor(private router: Router) {
-    }
   headerTitle = 'Ergebnis';
   headerSubtitle = 'Alles auf einen Blick';
 
@@ -42,21 +41,30 @@ export class ResultPage {
     'Die Durchführung wird gespeichert und das Resultat kann ans Online-Leaderboard gesendet werden.';
 
   private leaderboardService = inject(LeaderboardService);
+  private router = inject(Router);
+  private timer = inject(HuntTimerService);
+  private nav = inject(TaskNavigationService);
 
   name = this.leaderboardService.user;
-  duration = '12:43';
+  duration = '--:--';
   schnitzel = this.leaderboardService.schnitzel;
   kartoffeln = this.leaderboardService.potato;
+
+  async ionViewWillEnter(): Promise<void> {
+    const ms = await this.timer.stop();
+    this.duration = this.timer.formatMs(ms ?? 0);
+  }
 
   save(): void {
     // placeholder: später API/Storage
   }
 
-  goStart(): void {
-        this.router.navigate(['/home']);
+  async goStart(): Promise<void> {
+    await this.timer.reset();
+    this.router.navigateByUrl('/home');
   }
 
   goLeaderboard(): void {
-    // placeholder: später routing
+    this.nav.leaderboard();
   }
 }
