@@ -21,8 +21,10 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 type TaskState = 'idle' | 'tracking' | 'completed';
 
+
 @Component({
   selector: 'app-geolocation-task',
+  host: { class: 'ion-page'},
   standalone: true,
   imports: [
     CommonModule,

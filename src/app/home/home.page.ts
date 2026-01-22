@@ -23,6 +23,7 @@ import { radioButtonOn } from 'ionicons/icons';
 @Component({
   selector: 'app-home',
   standalone: true,
+  host: { class: 'ion-page' },
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
   imports: [
@@ -47,11 +48,11 @@ export class HomePage {
   @ViewChild('nameAlert') nameAlert!: IonAlert;
   @ViewChild('errorAlert') errorAlert!: IonAlert;
 
+
   constructor(private router: Router) {
     addIcons({ radioButtonOn });
   }
 
-  // Inputs bruuched zwingend e "name", zum uf data.name zuegriffe
   public alertInputs = [
     {
       name: 'playerName',
@@ -60,7 +61,6 @@ export class HomePage {
     },
   ];
 
-  // Buttons als Objekt, damit mir Handler ha
   public alertButtons = [
     {
       text: 'Abbrechen',
@@ -78,7 +78,7 @@ export class HomePage {
         }
         await this.nameAlert.dismiss();
 
-        this.router.navigate(['/geolocation-task'], { queryParams: { name } });
+        this.router.navigate(['/permisions']);
         return true;
       },
     },
