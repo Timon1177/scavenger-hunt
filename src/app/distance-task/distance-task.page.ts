@@ -1,6 +1,8 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter, Subscription } from 'rxjs';
+
 import { TaskNavigationService } from '../services/task-navigation.service';
 import {
   IonHeader,
@@ -16,7 +18,6 @@ import {
 import { Geolocation } from '@capacitor/geolocation';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { LeaderboardService } from '../leaderboard.service';
-import { Subscription, timer } from 'rxjs';
 
 type TaskState = 'idle' | 'tracking' | 'completed';
 
@@ -35,13 +36,20 @@ type TaskState = 'idle' | 'tracking' | 'completed';
     IonFooter,
   ],
   templateUrl: './distance-task.page.html',
-  styleUrl: './distance-task.page.scss',
+  styleUrls: ['./distance-task.page.scss'],
 })
 export class DistanceTaskPage implements OnDestroy {
+  constructor(private nav: TaskNavigationService, private router: Router) {
+    // currentPath immer aktuell halten
+    this.currentPathValue = this.router.url.split('?')[0];
+    this.routerSub = this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe(() => {
+        this.currentPathValue = this.router.url.split('?')[0];
+      });
+  }
 
-  constructor(private nav: TaskNavigationService, private router: Router) {}
-
-  private leaderboardService = inject(LeaderboardService)
+  private leaderboardService = inject(LeaderboardService);
 
   state: TaskState = 'idle';
 
@@ -53,81 +61,25 @@ export class DistanceTaskPage implements OnDestroy {
   targetMeters = 20;
 
   distanceMeters = 0;
+
   startPos: { lat: number; lng: number } | null = null;
-  lastPos: { lat: number; lng: number } | null = null;
+  lastPos: { lat: number; lng: number } | null = null; // nur für Anzeige/debug
 
   private watchId: string | null = null;
+  private pointsGiven = false;
 
-  async startTracking() {
-    if (this.state === 'tracking' || this.state === 'completed') return;
+  private currentPathValue = '';
+  private routerSub: Subscription;
 
-    await this.ensurePermissions();
-
-    this.state = 'tracking';
-    this.distanceMeters = 0;
-
-    const start = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
-    this.startPos = { lat: start.coords.latitude, lng: start.coords.longitude };
-    this.lastPos = { ...this.startPos };
-
-    this.watchId = await Geolocation.watchPosition(
-      { enableHighAccuracy: true, maximumAge: 1000, timeout: 8000 },
-      (pos) => {
-        if (!pos?.coords) return;
-        if (!this.startPos) return;
-
-        const cur = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-
-        if (this.lastPos) {
-          const step = this.haversineMeters(this.lastPos.lat, this.lastPos.lng, cur.lat, cur.lng);
-          this.distanceMeters += step;
-        }
-
-        this.lastPos = cur;
-
-        if (this.distanceMeters >= this.targetMeters) {
-          void this.completeAutomatically();
-        }
-      }
-    ) as unknown as string;
-  }
-
-  private async completeAutomatically(): Promise<void> {
-    if (this.state !== 'tracking') return;
-
-    this.state = 'completed';
-    this.stopWatch();
-
-    try {
-      await Haptics.impact({ style: ImpactStyle.Medium });
-    } catch {
-      // web ignore
-    }
-
-  }
-
-  async finishTask() {
-    if (!this.canFinish) return;
-    await this.completeAutomatically();
-    this.leaderboardService.increasePoints(false)
-  }
-
-  cancelRun() {
-    this.stopWatch();
-    this.nav.abort();
-  }
-
-  skipTask() {
-    this.stopWatch();
-    this.nav.skip(this.currentPath());
-  }
-
-  nextTask() {
-    this.nav.next(this.currentPath());
+  // Progress fürs HTML
+  get progress(): number {
+    if (this.targetMeters <= 0) return 0;
+    const pct = (this.distanceMeters / this.targetMeters) * 100;
+    return Math.max(0, Math.min(100, Math.round(pct)));
   }
 
   get canFinish(): boolean {
-    return this.state === 'tracking' && this.distanceMeters >= this.targetMeters;
+    return this.state === 'completed';
   }
 
   get distanceLabel(): string {
@@ -138,28 +90,181 @@ export class DistanceTaskPage implements OnDestroy {
     return this.state === 'tracking' ? 'Tracking läuft…' : 'Tracking starten';
   }
 
-  private stopWatch() {
+  // ===== Start =====
+  async startTracking(): Promise<void> {
+    if (this.state === 'tracking' || this.state === 'completed') return;
+
+    // Falls no en alte Watch lauft
+    this.stopWatch();
+
+    try {
+      await this.ensurePermissionsOrThrow();
+
+      this.pointsGiven = false;
+      this.distanceMeters = 0;
+      this.startPos = null;
+      this.lastPos = null;
+
+      this.state = 'tracking';
+
+      const start = await Geolocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0,
+      });
+
+      this.startPos = { lat: start.coords.latitude, lng: start.coords.longitude };
+      this.lastPos = { ...this.startPos };
+
+      this.watchId = (await Geolocation.watchPosition(
+        { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 },
+        (pos, err) => {
+          // watchPosition callback het oft (pos, err)
+          if (err) {
+            console.error('watchPosition error', err);
+            return;
+          }
+          if (!pos?.coords) return;
+          if (!this.startPos) return;
+
+          // Accuracy-Filter (GPS Jitter minimieren)
+          const acc = pos.coords.accuracy ?? 9999;
+          if (acc > 50) return;
+
+          const cur = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          this.lastPos = cur;
+
+          // Distanz immer vom Start bis jetzt
+          const total = this.haversineMeters(
+            this.startPos.lat,
+            this.startPos.lng,
+            cur.lat,
+            cur.lng
+          );
+
+          // NIE kleiner werde (GPS springt)
+          this.distanceMeters = Math.max(this.distanceMeters, total);
+
+          if (this.distanceMeters >= this.targetMeters) {
+            void this.completeAutomatically();
+          }
+        }
+      )) as unknown as string;
+    } catch (e) {
+      console.error('startTracking failed', e);
+      this.stopWatch();
+      this.state = 'idle';
+      this.distanceMeters = 0;
+      this.startPos = null;
+      this.lastPos = null;
+    }
+  }
+
+  // ===== Manual Refresh Button =====
+  async updateDistanceNow(): Promise<void> {
+    if (this.state !== 'tracking') return;
+    if (!this.startPos) return;
+
+    try {
+      const pos = await Geolocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 12000,
+        maximumAge: 0,
+      });
+
+      // Accuracy-Filter
+      const acc = pos.coords.accuracy ?? 9999;
+      if (acc > 50) return;
+
+      const cur = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      this.lastPos = cur;
+
+      const total = this.haversineMeters(
+        this.startPos.lat,
+        this.startPos.lng,
+        cur.lat,
+        cur.lng
+      );
+
+      // NIE kleiner werde
+      this.distanceMeters = Math.max(this.distanceMeters, total);
+
+      if (this.distanceMeters >= this.targetMeters) {
+        await this.completeAutomatically();
+      }
+    } catch (e) {
+      console.error('updateDistanceNow failed', e);
+    }
+  }
+
+  // ===== Complete =====
+  private async completeAutomatically(): Promise<void> {
+    if (this.state !== 'tracking') return;
+
+    this.state = 'completed';
+    this.stopWatch();
+
+    try {
+      await Haptics.impact({ style: ImpactStyle.Medium });
+    } catch {}
+  }
+
+  async finishTask(): Promise<void> {
+    if (!this.canFinish) return;
+
+    try {
+      await Haptics.impact({ style: ImpactStyle.Medium });
+    } catch {}
+
+    // erst weiter navigiere (gleich wie "Weiter")
+    this.nav.next(this.currentPath());
+
+    // Punkte nachher (verhindert Side-Effects)
+    if (!this.pointsGiven) {
+      this.pointsGiven = true;
+      queueMicrotask(() => this.leaderboardService.increasePoints(false));
+    }
+  }
+
+  // ===== Footer buttons =====
+  cancelRun(): void {
+    this.stopWatch();
+    this.state = 'idle';
+    this.distanceMeters = 0;
+    this.startPos = null;
+    this.lastPos = null;
+    this.nav.abort();
+  }
+
+  skipTask(): void {
+    this.stopWatch();
+    this.nav.skip(this.currentPath());
+  }
+
+  nextTask(): void {
+    this.nav.next(this.currentPath());
+  }
+
+  // ===== Helpers =====
+  private stopWatch(): void {
     if (this.watchId) {
-      Geolocation.clearWatch({ id: this.watchId });
+      try {
+        Geolocation.clearWatch({ id: this.watchId });
+      } catch {}
       this.watchId = null;
     }
   }
 
-  private async ensurePermissions() {
-    try {
-      const perm = await Geolocation.checkPermissions();
-      const ok = perm.location === 'granted' || perm.coarseLocation === 'granted';
-      if (ok) return;
+  private async ensurePermissionsOrThrow(): Promise<void> {
+    // checkPermissions kann werfen wenn GPS OFF
+    const perm = await Geolocation.checkPermissions();
+    const ok = perm.location === 'granted' || perm.coarseLocation === 'granted';
+    if (ok) return;
 
-      const req = await Geolocation.requestPermissions({
-        permissions: ['location', 'coarseLocation'],
-      });
-
-      const ok2 = req.location === 'granted' || req.coarseLocation === 'granted';
-      if (!ok2) throw new Error('No permission');
-    } catch {
-      return;
-    }
+    // bei dir stabil: OHNI args
+    const req = await Geolocation.requestPermissions();
+    const ok2 = req.location === 'granted' || req.coarseLocation === 'granted';
+    if (!ok2) throw new Error('No location permission');
   }
 
   private haversineMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -177,11 +282,12 @@ export class DistanceTaskPage implements OnDestroy {
     return R * c;
   }
 
-  ngOnDestroy(): void {
-    this.stopWatch();
+  private currentPath(): string {
+    return this.currentPathValue || this.router.url.split('?')[0];
   }
 
-  private currentPath(): string {
-    return this.router.url.split('?')[0];
+  ngOnDestroy(): void {
+    this.stopWatch();
+    this.routerSub?.unsubscribe();
   }
 }

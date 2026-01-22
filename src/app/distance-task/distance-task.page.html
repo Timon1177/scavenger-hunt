@@ -18,7 +18,11 @@
 
         <div class="progress-row">
           <div class="progress-bar">
-            <div class="progress-fill" [class.done]="state === 'completed'"></div>
+            <div
+              class="progress-fill"
+              [class.done]="state === 'completed'"
+              [style.width.%]="progress"
+            ></div>
           </div>
         </div>
 
@@ -39,8 +43,19 @@
           <ion-button
             expand="block"
             size="large"
+            class="primary"
+            [disabled]="state !== 'tracking'"
+            (click)="updateDistanceNow()"
+          >
+            Distanz aktualisieren
+          </ion-button>
+
+
+          <ion-button
+            expand="block"
+            size="large"
             class="finish"
-            [disabled]="!canFinish || state === 'completed'"
+            [disabled]="!canFinish"
             (click)="finishTask()"
           >
             Abschliessen
@@ -55,19 +70,11 @@
   <div class="footer-row">
     <ion-button fill="clear" class="footer-btn" (click)="cancelRun()">Abbrechen</ion-button>
 
-    <ion-button
-      class="footer-btn primary"
-      *ngIf="!(state === 'completed')"
-      (click)="skipTask()"
-    >
+    <ion-button class="footer-btn primary" *ngIf="state !== 'completed'" (click)="skipTask()">
       Überspringen
     </ion-button>
 
-    <ion-button
-      class="footer-btn primary"
-      *ngIf="state === 'completed'"
-      (click)="nextTask()"
-    >
+    <ion-button class="footer-btn primary" *ngIf="state === 'completed'" (click)="nextTask()">
       Weiter
     </ion-button>
   </div>
