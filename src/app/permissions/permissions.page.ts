@@ -36,7 +36,6 @@ type PermState = 'unknown' | 'granted' | 'denied';
   styleUrls: ['./permissions.page.scss'],
 })
 export class PermissionsPage implements OnInit {
-
   constructor(private nav: TaskNavigationService, private router: Router) {}
 
   ngOnInit(): void {}
@@ -52,7 +51,7 @@ export class PermissionsPage implements OnInit {
   cameraPerm: PermState = 'unknown';
 
   ionViewWillEnter(): void {
-    void this.refreshPermissions();
+    void this.refreshPermissionsWithRetries();
   }
 
   get canContinue(): boolean {
@@ -64,18 +63,25 @@ export class PermissionsPage implements OnInit {
     this.cameraPerm = await this.checkCamera();
   }
 
+  private async refreshPermissionsWithRetries(tries = 6, delayMs = 350): Promise<void> {
+    for (let i = 0; i < tries; i++) {
+      await this.refreshPermissions();
+      if (this.canContinue) return;
+      await new Promise((r) => setTimeout(r, delayMs));
+    }
+  }
+
   async requestAll(): Promise<void> {
     await this.requestLocationPrompt();
-
     await this.requestCameraPrompt();
-
-    await this.refreshPermissions();
+    await this.refreshPermissionsWithRetries();
   }
 
   back(): void {
     this.router.navigateByUrl('/home');
   }
 
+  // bleibt drin (falls du es später wieder brauchst), wird aber nicht mehr im HTML verwendet
   next(): void {
     if (!this.canContinue) return;
     this.router.navigateByUrl('/geolocation-task');
@@ -86,8 +92,18 @@ export class PermissionsPage implements OnInit {
       const p = await Geolocation.checkPermissions();
       const coarse = (p as any).coarseLocation as string | undefined;
 
-      if (p.location === 'granted' || coarse === 'granted') return 'granted';
-      if (p.location === 'denied' || coarse === 'denied') return 'denied';
+      const loc = this.normalizePerm(p.location);
+      const crs = this.normalizePerm(coarse);
+
+      if (loc === 'granted' || crs === 'granted') return 'granted';
+      if (loc === 'denied' || crs === 'denied') return 'denied';
+
+      try {
+        const navPerm = await (navigator as any).permissions?.query?.({ name: 'geolocation' });
+        const st = this.normalizePerm(navPerm?.state);
+        if (st !== 'unknown') return st;
+      } catch {}
+
       return 'unknown';
     } catch (e) {
       console.error('checkLocation failed', e);
@@ -127,13 +143,28 @@ export class PermissionsPage implements OnInit {
   private async checkCamera(): Promise<PermState> {
     try {
       const p = await Camera.checkPermissions();
-      if (p.camera === 'granted') return 'granted';
-      if (p.camera === 'denied') return 'denied';
+      const cam = this.normalizePerm(p.camera as any);
+      if (cam !== 'unknown') return cam;
+
+      try {
+        const navPerm = await (navigator as any).permissions?.query?.({ name: 'camera' });
+        const st = this.normalizePerm(navPerm?.state);
+        if (st !== 'unknown') return st;
+      } catch {}
+
       return 'unknown';
     } catch (e) {
       console.error('checkCamera failed', e);
       return 'unknown';
     }
+  }
+
+  private normalizePerm(v: any): PermState {
+    if (!v) return 'unknown';
+    const s = String(v);
+    if (s === 'granted' || s === 'limited') return 'granted';
+    if (s === 'denied') return 'denied';
+    return 'unknown';
   }
 
   private async requestCameraPrompt(): Promise<void> {
@@ -161,9 +192,8 @@ export class PermissionsPage implements OnInit {
   }
 
   dotClass(s: PermState): 'ok' | 'bad' | 'idle' {
-  if (s === 'granted') return 'ok';
-  if (s === 'denied') return 'bad';
-  return 'idle';
-}
-
+    if (s === 'granted') return 'ok';
+    if (s === 'denied') return 'bad';
+    return 'idle';
+  }
 }
