@@ -25,14 +25,19 @@
     <a routerLink="/permissions">User profile</a>
   </ion-card>
 
-  <ion-alert
-    #nameAlert
-    trigger="new-hunt"
-    header="Dein Name"
-    [buttons]="alertButtons"
-    [inputs]="alertInputs"
-    backdropDismiss="false"
-  ></ion-alert>
+    <ion-alert
+      #nameAlert
+      trigger="new-hunt"
+      header="Dein Name"
+      [buttons]="alertButtons"
+<<<<<<< HEAD
+      [inputs]="nameAlert"
+      (didDismiss)="onNameAlertDismiss()"
+=======
+      [inputs]="alertInputs"
+>>>>>>> 1b56f377cc09dd9f0dafb25b388d45419b359665
+      backdropDismiss="false"
+    ></ion-alert>
 
   <ion-alert
     #errorAlert
