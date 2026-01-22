@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TaskNavigationService } from '../services/task-navigation.service';
@@ -17,6 +17,7 @@ import {
 
 import { Geolocation } from '@capacitor/geolocation';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { LeaderboardService } from '../leaderboard.service';
 
 type TaskState = 'idle' | 'tracking' | 'completed';
 
@@ -53,6 +54,8 @@ export class GeolocationTaskPage implements OnDestroy {
   lat: 47.02750,
   lng: 8.30101
 };
+
+  private leaderboardService = inject(LeaderboardService)
 
   targetRadiusMeters = 10;
 
@@ -93,7 +96,7 @@ export class GeolocationTaskPage implements OnDestroy {
 
     this.state = 'completed';
     this.stopTracking();
-
+    this.leaderboardService.increasePoints(false)
     try {
       await Haptics.impact({ style: ImpactStyle.Medium });
     } catch {}

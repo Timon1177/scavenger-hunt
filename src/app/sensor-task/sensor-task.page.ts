@@ -1,8 +1,8 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TaskNavigationService } from '../services/task-navigation.service';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { Router,RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import {
   IonHeader,
   IonToolbar,
@@ -13,8 +13,9 @@ import {
   IonButton,
   IonFooter,
   IonChip,
-  IonLabel
+  IonLabel,
 } from '@ionic/angular/standalone';
+import { LeaderboardService } from '../leaderboard.service';
 
 type TaskState = 'idle' | 'running' | 'completed';
 
@@ -32,19 +33,24 @@ type TaskState = 'idle' | 'running' | 'completed';
     IonButton,
     IonFooter,
     IonChip,
-    IonLabel
+    IonLabel,
   ],
   templateUrl: './sensor-task.page.html',
   styleUrl: './sensor-task.page.scss',
 })
 export class SensorTaskPage implements OnDestroy {
+  constructor(
+    private nav: TaskNavigationService,
+    private router: Router,
+  ) {}
 
-  constructor(private nav: TaskNavigationService, private router: Router) {}
+  private leaderboardService = inject(LeaderboardService)
 
   title = 'Sensor';
   subtitle = 'Bewegung / Lage';
   taskTitle = 'Sensor-Aufgabe';
-  taskDesc = 'Stelle das Gerät kurz auf den Kopf und warte, bis die Aufgabe abgeschlossen ist.';
+  taskDesc =
+    'Stelle das Gerät kurz auf den Kopf und warte, bis die Aufgabe abgeschlossen ist.';
 
   state: TaskState = 'idle';
 
@@ -95,6 +101,7 @@ export class SensorTaskPage implements OnDestroy {
       await Haptics.impact({ style: ImpactStyle.Medium });
     } catch {}
     this.state = 'completed';
+    this.leaderboardService.increasePoints(false)
   }
 
   cancelRun(): void {
@@ -124,7 +131,8 @@ export class SensorTaskPage implements OnDestroy {
       this.holdMs = Math.max(0, this.holdMs - dt * 1.5);
     }
 
-    const ratio = this.requiredHoldMs === 0 ? 1 : this.holdMs / this.requiredHoldMs;
+    const ratio =
+      this.requiredHoldMs === 0 ? 1 : this.holdMs / this.requiredHoldMs;
     this.progress = Math.round(Math.max(0, Math.min(100, ratio * 100)));
 
     if (this.progress >= 100) {
@@ -172,7 +180,11 @@ export class SensorTaskPage implements OnDestroy {
 
   private detachOrientationListener(): void {
     if (!this.orientationHandler) return;
-    window.removeEventListener('deviceorientation', this.orientationHandler, true);
+    window.removeEventListener(
+      'deviceorientation',
+      this.orientationHandler,
+      true,
+    );
     this.orientationHandler = undefined;
     this.upsideDown = false;
   }
@@ -184,8 +196,7 @@ export class SensorTaskPage implements OnDestroy {
         const res = await anyDeviceOrientation.requestPermission();
         if (res !== 'granted') {
         }
-      } catch {
-      }
+      } catch {}
     }
   }
 

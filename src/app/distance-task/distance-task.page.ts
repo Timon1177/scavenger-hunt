@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TaskNavigationService } from '../services/task-navigation.service';
@@ -15,6 +15,7 @@ import {
 
 import { Geolocation } from '@capacitor/geolocation';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { LeaderboardService } from '../leaderboard.service';
 
 type TaskState = 'idle' | 'tracking' | 'completed';
 
@@ -38,6 +39,8 @@ type TaskState = 'idle' | 'tracking' | 'completed';
 export class DistanceTaskPage implements OnDestroy {
 
   constructor(private nav: TaskNavigationService, private router: Router) {}
+
+  private leaderboardService = inject(LeaderboardService)
 
   state: TaskState = 'idle';
 
@@ -99,11 +102,13 @@ export class DistanceTaskPage implements OnDestroy {
     } catch {
       // web ignore
     }
+
   }
 
   async finishTask() {
     if (!this.canFinish) return;
     await this.completeAutomatically();
+    this.leaderboardService.increasePoints(false)
   }
 
   cancelRun() {

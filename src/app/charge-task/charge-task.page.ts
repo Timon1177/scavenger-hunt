@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TaskNavigationService } from '../services/task-navigation.service';
@@ -15,6 +15,8 @@ import {
 
 import { Device, type BatteryInfo } from '@capacitor/device';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { LeaderboardService } from '../leaderboard.service';
+
 
 type UiState = 'idle' | 'checked' | 'completed';
 
@@ -37,6 +39,8 @@ type UiState = 'idle' | 'checked' | 'completed';
 })
 export class ChargeTaskPage {
   constructor(private nav: TaskNavigationService, private router: Router) {}
+
+  private leaderboardService = inject(LeaderboardService)
 
   title = 'Laden';
   subtitle = 'Device Status';
@@ -79,7 +83,7 @@ export class ChargeTaskPage {
       await Haptics.impact({ style: ImpactStyle.Medium });
     } catch {}
 
-    this.nextTask();
+    this.leaderboardService.increasePoints(false)
   }
 
   cancelRun(): void {
