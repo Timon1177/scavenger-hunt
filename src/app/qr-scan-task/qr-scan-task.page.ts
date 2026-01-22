@@ -1,5 +1,5 @@
 // qr-scan-task.page.ts
-import { Component, inject, OnDestroy } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TaskNavigationService } from '../services/task-navigation.service';
@@ -18,6 +18,7 @@ import { Camera } from '@capacitor/camera';
 import { Html5Qrcode } from 'html5-qrcode';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { LeaderboardService } from '../leaderboard.service';
+import { Subscription, timer } from 'rxjs';
 
 type TaskState = 'idle' | 'scanning' | 'matched' | 'completed';
 
@@ -38,13 +39,28 @@ type TaskState = 'idle' | 'scanning' | 'matched' | 'completed';
   templateUrl: './qr-scan-task.page.html',
   styleUrl: './qr-scan-task.page.scss',
 })
-export class QrScanTaskPage implements OnDestroy {
+export class QrScanTaskPage implements OnInit, OnDestroy {
   constructor(
     private nav: TaskNavigationService,
     private router: Router,
   ) {}
 
-  private leaderboardService = inject(LeaderboardService)
+  private leaderboardService = inject(LeaderboardService);
+
+  private subscription: Subscription | null = null;
+  private getsPotato: boolean = false;
+
+  ngOnInit(): void {
+    this.startTimer();
+  }
+
+  startTimer() {
+    if (!this.subscription) {
+      this.subscription = timer(600000, -1).subscribe(
+        (n) => (this.getsPotato = true),
+      );
+    }
+  }
 
   title = 'QR Scan';
   subtitle = 'Pflichtaufgabe (!)';
@@ -101,7 +117,7 @@ export class QrScanTaskPage implements OnDestroy {
 
           this.state = 'matched';
           await this.stopCamera();
-          this.leaderboardService.increasePoints(false)
+          this.leaderboardService.increasePoints(this.getsPotato);
           try {
             await Haptics.impact({ style: ImpactStyle.Medium });
           } catch {}
@@ -150,6 +166,9 @@ export class QrScanTaskPage implements OnDestroy {
 
   ngOnDestroy(): void {
     void this.stopCamera();
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   private currentPath(): string {

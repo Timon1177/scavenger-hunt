@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TaskNavigationService } from '../services/task-navigation.service';
@@ -10,12 +10,13 @@ import {
   IonCard,
   IonCardContent,
   IonButton,
-  IonFooter
+  IonFooter,
 } from '@ionic/angular/standalone';
 
 import { Geolocation } from '@capacitor/geolocation';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { LeaderboardService } from '../leaderboard.service';
+import { Subscription, timer } from 'rxjs';
 
 type TaskState = 'idle' | 'tracking' | 'completed';
 
@@ -31,16 +32,18 @@ type TaskState = 'idle' | 'tracking' | 'completed';
     IonCard,
     IonCardContent,
     IonButton,
-    IonFooter
+    IonFooter,
   ],
   templateUrl: './distance-task.page.html',
   styleUrl: './distance-task.page.scss',
 })
-export class DistanceTaskPage implements OnDestroy {
+export class DistanceTaskPage implements OnInit, OnDestroy {
+  constructor(
+    private nav: TaskNavigationService,
+    private router: Router,
+  ) {}
 
-  constructor(private nav: TaskNavigationService, private router: Router) {}
-
-  private leaderboardService = inject(LeaderboardService)
+  private leaderboardService = inject(LeaderboardService);
 
   state: TaskState = 'idle';
 
@@ -57,6 +60,21 @@ export class DistanceTaskPage implements OnDestroy {
 
   private watchId: string | null = null;
 
+  private subscription: Subscription | null = null;
+  private getsPotato: boolean = false;
+
+  ngOnInit(): void {
+    this.startTimer();
+  }
+
+  startTimer() {
+    if (!this.subscription) {
+      this.subscription = timer(600000, -1).subscribe(
+        (n) => (this.getsPotato = true),
+      );
+    }
+  }
+
   async startTracking() {
     if (this.state === 'tracking' || this.state === 'completed') return;
 
@@ -65,11 +83,13 @@ export class DistanceTaskPage implements OnDestroy {
     this.state = 'tracking';
     this.distanceMeters = 0;
 
-    const start = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
+    const start = await Geolocation.getCurrentPosition({
+      enableHighAccuracy: true,
+    });
     this.startPos = { lat: start.coords.latitude, lng: start.coords.longitude };
     this.lastPos = { ...this.startPos };
 
-    this.watchId = await Geolocation.watchPosition(
+    this.watchId = (await Geolocation.watchPosition(
       { enableHighAccuracy: true, maximumAge: 1000, timeout: 8000 },
       (pos) => {
         if (!pos?.coords) return;
@@ -78,7 +98,12 @@ export class DistanceTaskPage implements OnDestroy {
         const cur = { lat: pos.coords.latitude, lng: pos.coords.longitude };
 
         if (this.lastPos) {
-          const step = this.haversineMeters(this.lastPos.lat, this.lastPos.lng, cur.lat, cur.lng);
+          const step = this.haversineMeters(
+            this.lastPos.lat,
+            this.lastPos.lng,
+            cur.lat,
+            cur.lng,
+          );
           this.distanceMeters += step;
         }
 
@@ -87,8 +112,8 @@ export class DistanceTaskPage implements OnDestroy {
         if (this.distanceMeters >= this.targetMeters) {
           void this.completeAutomatically();
         }
-      }
-    ) as unknown as string;
+      },
+    )) as unknown as string;
   }
 
   private async completeAutomatically(): Promise<void> {
@@ -102,13 +127,12 @@ export class DistanceTaskPage implements OnDestroy {
     } catch {
       // web ignore
     }
-
   }
 
   async finishTask() {
     if (!this.canFinish) return;
     await this.completeAutomatically();
-    this.leaderboardService.increasePoints(false)
+    this.leaderboardService.increasePoints(this.getsPotato);
   }
 
   cancelRun() {
@@ -126,7 +150,9 @@ export class DistanceTaskPage implements OnDestroy {
   }
 
   get canFinish(): boolean {
-    return this.state === 'tracking' && this.distanceMeters >= this.targetMeters;
+    return (
+      this.state === 'tracking' && this.distanceMeters >= this.targetMeters
+    );
   }
 
   get distanceLabel(): string {
@@ -147,21 +173,28 @@ export class DistanceTaskPage implements OnDestroy {
   private async ensurePermissions() {
     try {
       const perm = await Geolocation.checkPermissions();
-      const ok = perm.location === 'granted' || perm.coarseLocation === 'granted';
+      const ok =
+        perm.location === 'granted' || perm.coarseLocation === 'granted';
       if (ok) return;
 
       const req = await Geolocation.requestPermissions({
         permissions: ['location', 'coarseLocation'],
       });
 
-      const ok2 = req.location === 'granted' || req.coarseLocation === 'granted';
+      const ok2 =
+        req.location === 'granted' || req.coarseLocation === 'granted';
       if (!ok2) throw new Error('No permission');
     } catch {
       return;
     }
   }
 
-  private haversineMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  private haversineMeters(
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number,
+  ): number {
     const R = 6371000;
     const toRad = (v: number) => (v * Math.PI) / 180;
 
@@ -178,6 +211,9 @@ export class DistanceTaskPage implements OnDestroy {
 
   ngOnDestroy(): void {
     this.stopWatch();
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   private currentPath(): string {

@@ -37,4 +37,10 @@ export class LeaderboardService {
     this.#schnitzel += 1;
     if (gotPotato == true) this.#potato += 1;
   }
+
+  reset(){
+    this.#schnitzel=0
+    this.#potato=0
+    this.#user=""
+  }
 }

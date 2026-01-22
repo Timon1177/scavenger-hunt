@@ -16,6 +16,7 @@ import {
   IonLabel,
 } from '@ionic/angular/standalone';
 import { LeaderboardService } from '../leaderboard.service';
+import { Subscription, timer } from 'rxjs';
 
 type TaskState = 'idle' | 'running' | 'completed';
 
@@ -44,7 +45,7 @@ export class SensorTaskPage implements OnDestroy {
     private router: Router,
   ) {}
 
-  private leaderboardService = inject(LeaderboardService)
+  private leaderboardService = inject(LeaderboardService);
 
   title = 'Sensor';
   subtitle = 'Bewegung / Lage';
@@ -64,6 +65,21 @@ export class SensorTaskPage implements OnDestroy {
 
   private upsideDown = false;
   private orientationHandler?: (e: DeviceOrientationEvent) => void;
+
+  private subscription: Subscription | null = null;
+  private getsPotato: boolean = false;
+
+  ngOnInit(): void {
+    this.startTimer();
+  }
+
+  startTimer() {
+    if (!this.subscription) {
+      this.subscription = timer(600000, -1).subscribe(
+        (n) => (this.getsPotato = true),
+      );
+    }
+  }
 
   get statusLabel(): string {
     if (this.state === 'completed') return 'Erkennung: abgeschlossen';
@@ -101,7 +117,7 @@ export class SensorTaskPage implements OnDestroy {
       await Haptics.impact({ style: ImpactStyle.Medium });
     } catch {}
     this.state = 'completed';
-    this.leaderboardService.increasePoints(false)
+    this.leaderboardService.increasePoints(this.getsPotato);
   }
 
   cancelRun(): void {
@@ -202,6 +218,9 @@ export class SensorTaskPage implements OnDestroy {
 
   ngOnDestroy(): void {
     this.cleanup();
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   private currentPath(): string {

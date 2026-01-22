@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TaskNavigationService } from '../services/task-navigation.service';
@@ -18,6 +18,7 @@ import {
 import { Geolocation } from '@capacitor/geolocation';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { LeaderboardService } from '../leaderboard.service';
+import { Subscription, timer } from 'rxjs';
 
 type TaskState = 'idle' | 'tracking' | 'completed';
 
@@ -42,8 +43,10 @@ type TaskState = 'idle' | 'tracking' | 'completed';
   styleUrls: ['./geolocation-task.page.scss'],
 })
 export class GeolocationTaskPage implements OnDestroy {
-
-  constructor(private nav: TaskNavigationService, private router: Router) {}
+  constructor(
+    private nav: TaskNavigationService,
+    private router: Router,
+  ) {}
 
   state: TaskState = 'idle';
   title = 'Geolocation';
@@ -51,11 +54,11 @@ export class GeolocationTaskPage implements OnDestroy {
     'Beweg dich in den Zielbereich. Sobald du nah genug bist, kannst du bestätigen.';
 
   target = {
-  lat: 47.0339,
-  lng: 8.2816
-};
+    lat: 47.0339,
+    lng: 8.2816,
+  };
 
-  private leaderboardService = inject(LeaderboardService)
+  private leaderboardService = inject(LeaderboardService);
 
   targetRadiusMeters = 10;
 
@@ -63,6 +66,21 @@ export class GeolocationTaskPage implements OnDestroy {
   statusMode: 'too-far' | 'in-range' | 'unknown' = 'unknown';
 
   private timer: any = null;
+
+  private subscription: Subscription | null = null;
+  private getsPotato: boolean = false;
+
+  ngOnInit(): void {
+    this.startTimer();
+  }
+
+  startTimer() {
+    if (!this.subscription) {
+      this.subscription = timer(600000, -1).subscribe(
+        (n) => (this.getsPotato = true),
+      );
+    }
+  }
 
   async ionViewWillEnter(): Promise<void> {
     // Nur checken/redirecten (keine Requests hier!)
@@ -96,7 +114,7 @@ export class GeolocationTaskPage implements OnDestroy {
 
     this.state = 'completed';
     this.stopTracking();
-    this.leaderboardService.increasePoints(false)
+    this.leaderboardService.increasePoints(this.getsPotato);
     try {
       await Haptics.impact({ style: ImpactStyle.Medium });
     } catch {}
@@ -146,14 +164,16 @@ export class GeolocationTaskPage implements OnDestroy {
   private async ensurePermissions() {
     try {
       const perm = await Geolocation.checkPermissions();
-      const ok = perm.location === 'granted' || perm.coarseLocation === 'granted';
+      const ok =
+        perm.location === 'granted' || perm.coarseLocation === 'granted';
       if (ok) return;
 
       const req = await Geolocation.requestPermissions({
         permissions: ['location', 'coarseLocation'],
       });
 
-      const ok2 = req.location === 'granted' || req.coarseLocation === 'granted';
+      const ok2 =
+        req.location === 'granted' || req.coarseLocation === 'granted';
       if (!ok2) throw new Error('No permission');
     } catch {
       return;
@@ -171,7 +191,12 @@ export class GeolocationTaskPage implements OnDestroy {
       const lat = pos.coords.latitude;
       const lng = pos.coords.longitude;
 
-      const d = this.haversineMeters(lat, lng, this.target.lat, this.target.lng);
+      const d = this.haversineMeters(
+        lat,
+        lng,
+        this.target.lat,
+        this.target.lng,
+      );
       this.lastDistanceMeters = d;
 
       this.statusMode = d <= this.targetRadiusMeters ? 'in-range' : 'too-far';
@@ -185,7 +210,7 @@ export class GeolocationTaskPage implements OnDestroy {
     lat1: number,
     lon1: number,
     lat2: number,
-    lon2: number
+    lon2: number,
   ): number {
     const R = 6371000;
     const toRad = (v: number) => (v * Math.PI) / 180;
@@ -195,9 +220,7 @@ export class GeolocationTaskPage implements OnDestroy {
 
     const a =
       Math.sin(dLat / 2) ** 2 +
-      Math.cos(toRad(lat1)) *
-        Math.cos(toRad(lat2)) *
-        Math.sin(dLon / 2) ** 2;
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
@@ -205,6 +228,9 @@ export class GeolocationTaskPage implements OnDestroy {
 
   ngOnDestroy(): void {
     this.stopTracking();
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   private currentPath(): string {

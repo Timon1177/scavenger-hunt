@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TaskNavigationService } from '../services/task-navigation.service';
@@ -10,13 +10,13 @@ import {
   IonCard,
   IonCardContent,
   IonButton,
-  IonFooter
+  IonFooter,
 } from '@ionic/angular/standalone';
 
 import { Device, type BatteryInfo } from '@capacitor/device';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { LeaderboardService } from '../leaderboard.service';
-
+import { Subscription, timer } from 'rxjs';
 
 type UiState = 'idle' | 'checked' | 'completed';
 
@@ -32,16 +32,18 @@ type UiState = 'idle' | 'checked' | 'completed';
     IonCard,
     IonCardContent,
     IonButton,
-    IonFooter
+    IonFooter,
   ],
   templateUrl: './charge-task.page.html',
   styleUrl: './charge-task.page.scss',
 })
-export class ChargeTaskPage {
-  constructor(private nav: TaskNavigationService, private router: Router) {}
+export class ChargeTaskPage implements OnInit, OnDestroy {
+  constructor(
+    private nav: TaskNavigationService,
+    private router: Router,
+  ) {}
 
-  private leaderboardService = inject(LeaderboardService)
-
+  private leaderboardService = inject(LeaderboardService);
   title = 'Laden';
   subtitle = 'Device Status';
   taskTitle = 'Gerät laden';
@@ -53,6 +55,27 @@ export class ChargeTaskPage {
   isCharging: boolean | null = null;
 
   private lastBattery: BatteryInfo | null = null;
+
+  private subscription: Subscription | null = null;
+  private getsPotato: boolean = false;
+
+  ngOnInit(): void {
+    this.startTimer();
+  }
+
+  ngOnDestroy(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
+
+  startTimer() {
+    if (!this.subscription) {
+      this.subscription = timer(600000, -1).subscribe(
+        (n) => (this.getsPotato = true),
+      );
+    }
+  }
 
   get canFinish(): boolean {
     return this.isCharging === true && this.state !== 'completed';
@@ -83,7 +106,7 @@ export class ChargeTaskPage {
       await Haptics.impact({ style: ImpactStyle.Medium });
     } catch {}
 
-    this.leaderboardService.increasePoints(false)
+    this.leaderboardService.increasePoints(this.getsPotato);
   }
 
   cancelRun(): void {
