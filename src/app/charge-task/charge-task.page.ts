@@ -77,13 +77,15 @@ export class ChargeTaskPage {
   async finishTask(): Promise<void> {
     if (!this.canFinish) return;
 
-    this.state = 'completed';
-
     try {
-      await Haptics.impact({ style: ImpactStyle.Medium });
-    } catch {}
+          await Haptics.impact({ style: ImpactStyle.Medium });
+        } catch {}
+      this.state = 'completed';
+      this.nav.next(this.currentPath());
 
-    this.leaderboardService.increasePoints(false)
+
+
+
   }
 
   cancelRun(): void {

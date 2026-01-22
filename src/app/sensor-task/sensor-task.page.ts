@@ -90,6 +90,9 @@ export class SensorTaskPage implements OnDestroy {
 
   async finishTask(): Promise<void> {
     if (!this.canFinish) return;
+    try {
+          await Haptics.impact({ style: ImpactStyle.Medium });
+        } catch {}
     //this.leaderboardService.increasePoints(false);
     this.nav.next(this.currentPath());
   }
