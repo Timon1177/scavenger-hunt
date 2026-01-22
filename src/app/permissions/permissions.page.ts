@@ -36,10 +36,14 @@ type PermState = 'unknown' | 'granted' | 'denied';
   styleUrls: ['./permissions.page.scss'],
 })
 export class PermissionsPage implements OnInit {
+  constructor(
+    private nav: TaskNavigationService,
+    private router: Router,
+  ) {}
 
-  constructor(private nav: TaskNavigationService, private router: Router) {}
-
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.ionViewWillEnter();
+  }
 
   title = 'Berechtigungen';
   subtitle = "Einmal erlauben, dann läuft's.";
@@ -111,11 +115,12 @@ export class PermissionsPage implements OnInit {
 
       try {
         await new Promise<void>((resolve, reject) => {
-          if (!('geolocation' in navigator)) return reject('no geolocation api');
+          if (!('geolocation' in navigator))
+            return reject('no geolocation api');
           navigator.geolocation.getCurrentPosition(
             () => resolve(),
             (err) => reject(err),
-            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
           );
         });
       } catch (e2) {
@@ -161,9 +166,8 @@ export class PermissionsPage implements OnInit {
   }
 
   dotClass(s: PermState): 'ok' | 'bad' | 'idle' {
-  if (s === 'granted') return 'ok';
-  if (s === 'denied') return 'bad';
-  return 'idle';
-}
-
+    if (s === 'granted') return 'ok';
+    if (s === 'denied') return 'bad';
+    return 'idle';
+  }
 }

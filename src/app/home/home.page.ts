@@ -5,7 +5,6 @@ import {
   IonCardContent,
   IonCardHeader,
   IonCardTitle,
-  IonCardSubtitle,
   IonIcon,
   IonChip,
   IonLabel,
@@ -28,7 +27,6 @@ import { LeaderboardService } from '../leaderboard.service';
   styleUrls: ['home.page.scss'],
   imports: [
     IonCardTitle,
-    IonCardSubtitle,
     IonCard,
     IonCardContent,
     IonCardHeader,
