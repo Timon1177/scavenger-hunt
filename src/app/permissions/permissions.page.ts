@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonHeader,
@@ -33,9 +33,13 @@ type PermState = 'unknown' | 'granted' | 'denied';
   templateUrl: './permissions.page.html',
   styleUrl: './permissions.page.scss',
 })
-//export class PermissionsPage {}
 
-export class PermissionsPage {
+export class PermissionsPage implements OnInit{
+
+  ngOnInit(): void {
+    
+  }
+  
   title = 'Berechtigungen';
   subtitle = "Einmal erlauben, dann läuft's.";
 
