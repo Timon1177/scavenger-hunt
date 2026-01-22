@@ -1,6 +1,6 @@
 <ion-header translucent="true">
   <ion-toolbar>
-    <ion-title>{{ title }}</ion-title>
+    <ion-title>Aufgabe</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -8,8 +8,6 @@
   <div class="shell">
     <ion-card class="task-card">
       <ion-card-content>
-        <div class="subline">{{ subtitle }}</div>
-
         <div class="task-head">
           <div class="dot"></div>
           <div>
@@ -20,41 +18,39 @@
 
         <div class="progress-row">
           <div class="progress-bar">
-            <div class="progress-fill top"></div>
+            <div class="progress-fill" [class.done]="state === 'completed'"></div>
           </div>
         </div>
 
-        <div class="panel">
-          <ion-chip class="chip" [class.run]="statusMode === 'run'" [class.done]="statusMode === 'done'">
-            <span class="dot-mini" [class.run]="statusMode === 'run'" [class.done]="statusMode === 'done'"></span>
-            <ion-label>{{ statusLabel }}</ion-label>
-          </ion-chip>
+        <div *ngIf="state === 'idle'" class="panel">
+          <ion-button expand="block" size="large" class="primary" (click)="startTask()">
+            Aufgabe starten
+          </ion-button>
+        </div>
 
-          <div class="mid">
-            <div class="mid-label">Fortschritt</div>
-            <div class="mid-value">{{ progress }}%</div>
+        <div *ngIf="state !== 'idle'" class="panel">
+          <div class="panel-head">
+            <div class="panel-title">Status</div>
 
-            <div class="bar">
-              <div class="bar-fill" [style.width.%]="progress"></div>
-            </div>
+            <ion-chip class="chip-live" *ngIf="state === 'running'">
+              <ion-label>Live</ion-label>
+            </ion-chip>
+
+            <ion-chip class="chip-done" *ngIf="state === 'completed'">
+              <ion-label>Erledigt</ion-label>
+            </ion-chip>
+          </div>
+
+          <div class="panel-sub">
+            {{ statusLabel }}<br />
+            Fortschritt: <b>{{ progress }}%</b>
           </div>
 
           <ion-button
-            *ngIf="state === 'idle'"
-            expand="block"
-            size="large"
-            class="primary"
-            (click)="startTask()"
-          >
-            Aufgabe starten
-          </ion-button>
-
-          <ion-button
-            *ngIf="state !== 'idle'"
             expand="block"
             size="large"
             class="finish"
-            [disabled]="!canFinish"
+            [disabled]="state !== 'completed'"
             (click)="finishTask()"
           >
             Abschliessen
@@ -68,6 +64,21 @@
 <ion-footer class="footer" translucent="true">
   <div class="footer-row">
     <ion-button fill="clear" class="footer-btn" (click)="cancelRun()">Abbrechen</ion-button>
-    <ion-button class="footer-btn primary" (click)="skipTask()">Überspringen</ion-button>
+
+    <ion-button
+      class="footer-btn primary"
+      *ngIf="state !== 'completed'"
+      (click)="skipTask()"
+    >
+      Überspringen
+    </ion-button>
+
+    <ion-button
+      class="footer-btn primary"
+      *ngIf="state === 'completed'"
+      (click)="nextTask()"
+    >
+      Weiter
+    </ion-button>
   </div>
 </ion-footer>

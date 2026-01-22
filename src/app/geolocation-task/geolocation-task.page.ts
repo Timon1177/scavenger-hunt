@@ -1,5 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { TaskNavigationService } from '../services/task-navigation.service';
 import {
   IonHeader,
   IonToolbar,
@@ -13,12 +15,10 @@ import {
   IonLabel,
 } from '@ionic/angular/standalone';
 
-
 import { Geolocation } from '@capacitor/geolocation';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 type TaskState = 'idle' | 'tracking' | 'completed';
-
 
 @Component({
   selector: 'app-geolocation-task',
@@ -42,11 +42,17 @@ type TaskState = 'idle' | 'tracking' | 'completed';
 })
 export class GeolocationTaskPage implements OnDestroy {
 
+  constructor(private nav: TaskNavigationService, private router: Router) {}
+
   state: TaskState = 'idle';
   title = 'Geolocation';
   intro = 'Beweg dich in den Zielbereich. Sobald du nah genug bist, kannst du bestätigen.';
 
-  target = { lat: 47.0502, lng: 8.3093 };
+  target = {
+  lat: 47.0339,
+  lng: 8.2816
+};
+
   targetRadiusMeters = 10;
 
   lastDistanceMeters: number | null = null;
@@ -84,16 +90,16 @@ export class GeolocationTaskPage implements OnDestroy {
 
   cancelRun() {
     this.stopTracking();
-    this.state = 'idle';
-    this.lastDistanceMeters = null;
-    this.statusMode = 'unknown';
+    this.nav.abort();
   }
 
   skipTask() {
     this.stopTracking();
-    this.state = 'completed';
-    this.lastDistanceMeters = null;
-    this.statusMode = 'unknown';
+    this.nav.skip(this.currentPath());
+  }
+
+  nextTask() {
+    this.nav.next(this.currentPath());
   }
 
   get canFinish(): boolean {
@@ -130,7 +136,6 @@ export class GeolocationTaskPage implements OnDestroy {
       const ok2 = req.location === 'granted' || req.coarseLocation === 'granted';
       if (!ok2) throw new Error('No permission');
     } catch {
-      // Web fallback: Browser prompt passiert spätestens beim getCurrentPosition.
       return;
     }
   }
@@ -173,5 +178,9 @@ export class GeolocationTaskPage implements OnDestroy {
 
   ngOnDestroy(): void {
     this.stopTracking();
+  }
+
+  private currentPath(): string {
+    return this.router.url.split('?')[0];
   }
 }

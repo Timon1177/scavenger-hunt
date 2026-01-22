@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { TaskNavigationService } from '../services/task-navigation.service';
 import {
   IonHeader,
   IonToolbar,
@@ -33,13 +35,12 @@ type PermState = 'unknown' | 'granted' | 'denied';
   templateUrl: './permissions.page.html',
   styleUrl: './permissions.page.scss',
 })
+export class PermissionsPage implements OnInit {
 
-export class PermissionsPage implements OnInit{
+  constructor(private nav: TaskNavigationService, private router: Router) {}
 
-  ngOnInit(): void {
-    
-  }
-  
+  ngOnInit(): void {}
+
   title = 'Berechtigungen';
   subtitle = "Einmal erlauben, dann läuft's.";
 
@@ -69,10 +70,13 @@ export class PermissionsPage implements OnInit{
     await this.refreshPermissions();
   }
 
-  back(): void {}
+  back(): void {
+    this.router.navigateByUrl('/home');
+  }
 
   next(): void {
     if (!this.canContinue) return;
+    this.router.navigateByUrl('/geolocation-task');
   }
 
   private async checkLocation(): Promise<PermState> {
@@ -109,13 +113,16 @@ export class PermissionsPage implements OnInit{
     } catch {}
   }
 
-  labelFor(state: PermState): string {
-    if (state === 'granted') return 'erlaubt';
-    if (state === 'denied') return 'nicht erlaubt';
-    return 'unbekannt';
+  labelFor(s: PermState): string {
+    if (s === 'granted') return 'Erlaubt';
+    if (s === 'denied') return 'Abgelehnt';
+    return 'Unbekannt';
   }
 
-  dotClass(state: PermState): 'ok' | 'bad' {
-    return state === 'granted' ? 'ok' : 'bad';
-  }
+  dotClass(s: PermState): 'ok' | 'bad' | 'idle' {
+  if (s === 'granted') return 'ok';
+  if (s === 'denied') return 'bad';
+  return 'idle';
+}
+
 }

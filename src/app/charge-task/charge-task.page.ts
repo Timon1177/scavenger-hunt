@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { TaskNavigationService } from '../services/task-navigation.service';
 import {
   IonHeader,
   IonToolbar,
@@ -34,10 +36,12 @@ type UiState = 'idle' | 'checked' | 'completed';
   styleUrl: './charge-task.page.scss',
 })
 export class ChargeTaskPage {
+  constructor(private nav: TaskNavigationService, private router: Router) {}
+
   title = 'Laden';
   subtitle = 'Device Status';
   taskTitle = 'Gerät laden';
-  taskDesc = 'Verbinde schnell dein Gerät mit Strom, um die Aufgabe zu erledigen.';
+  taskDesc = 'Verbinde dein Gerät mit Strom, um die Aufgabe zu erledigen.';
 
   state: UiState = 'idle';
 
@@ -74,19 +78,23 @@ export class ChargeTaskPage {
     try {
       await Haptics.impact({ style: ImpactStyle.Medium });
     } catch {}
+
+    this.nextTask();
   }
 
   cancelRun(): void {
-    this.state = 'idle';
-    this.statusText = 'Nicht geladen';
-    this.isCharging = null;
-    this.lastBattery = null;
+    this.nav.abort();
   }
 
   skipTask(): void {
-    this.state = 'completed';
-    this.statusText = 'Übersprungen';
-    this.isCharging = null;
-    this.lastBattery = null;
+    this.nav.skip(this.currentPath());
+  }
+
+  nextTask(): void {
+    this.nav.next(this.currentPath());
+  }
+
+  private currentPath(): string {
+    return this.router.url.split('?')[0];
   }
 }

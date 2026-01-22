@@ -1,5 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { TaskNavigationService } from '../services/task-navigation.service';
 import {
   IonHeader,
   IonToolbar,
@@ -38,6 +40,9 @@ type TaskState = 'idle' | 'scanning' | 'matched' | 'completed';
   styleUrl: './qr-scan-task.page.scss',
 })
 export class QrScanTaskPage implements OnDestroy {
+
+  constructor(private nav: TaskNavigationService, private router: Router) {}
+
   title = 'QR Scan';
   subtitle = 'Pflichtaufgabe (!)';
   taskTitle = 'Kamera QR';
@@ -99,14 +104,16 @@ export class QrScanTaskPage implements OnDestroy {
 
   async cancelRun(): Promise<void> {
     await this.stopCamera();
-    this.state = 'idle';
-    this.lastResult = null;
+    this.nav.abort();
   }
 
   async skipTask(): Promise<void> {
     await this.stopCamera();
-    this.state = 'completed';
-    this.lastResult = null;
+    this.nav.skip(this.currentPath());
+  }
+
+  nextTask(): void {
+    this.nav.next(this.currentPath());
   }
 
   private async stopCamera(): Promise<void> {
@@ -126,5 +133,9 @@ export class QrScanTaskPage implements OnDestroy {
 
   ngOnDestroy(): void {
     void this.stopCamera();
+  }
+
+  private currentPath(): string {
+    return this.router.url.split('?')[0];
   }
 }

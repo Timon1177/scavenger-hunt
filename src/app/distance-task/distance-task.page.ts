@@ -1,5 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { TaskNavigationService } from '../services/task-navigation.service';
 import {
   IonHeader,
   IonToolbar,
@@ -34,6 +36,9 @@ type TaskState = 'idle' | 'tracking' | 'completed';
   styleUrl: './distance-task.page.scss',
 })
 export class DistanceTaskPage implements OnDestroy {
+
+  constructor(private nav: TaskNavigationService, private router: Router) {}
+
   state: TaskState = 'idle';
 
   title = 'Laufen';
@@ -50,59 +55,40 @@ export class DistanceTaskPage implements OnDestroy {
   private watchId: string | null = null;
 
   async startTracking() {
-    if (this.state === 'tracking') return;
+    if (this.state === 'tracking' || this.state === 'completed') return;
 
-    try {
-      await this.ensurePermissions();
+    await this.ensurePermissions();
 
-      this.distanceMeters = 0;
-      this.startPos = null;
-      this.lastPos = null;
+    this.state = 'tracking';
+    this.distanceMeters = 0;
 
-      this.state = 'tracking';
+    const start = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
+    this.startPos = { lat: start.coords.latitude, lng: start.coords.longitude };
+    this.lastPos = { ...this.startPos };
 
-      this.watchId = await Geolocation.watchPosition(
-        { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 },
-        (pos, err) => {
-          if (err || !pos?.coords) return;
+    this.watchId = await Geolocation.watchPosition(
+      { enableHighAccuracy: true, maximumAge: 1000, timeout: 8000 },
+      (pos) => {
+        if (!pos?.coords) return;
+        if (!this.startPos) return;
 
-          const lat = pos.coords.latitude;
-          const lng = pos.coords.longitude;
+        const cur = { lat: pos.coords.latitude, lng: pos.coords.longitude };
 
-          const current = { lat, lng };
-
-          if (!this.startPos) {
-            this.startPos = current;
-            this.lastPos = current;
-            return;
-          }
-
-          if (!this.lastPos) {
-            this.lastPos = current;
-            return;
-          }
-
-          const step = this.haversineMeters(this.lastPos.lat, this.lastPos.lng, current.lat, current.lng);
-
-          // GPS-Jitter filtern: Mini-Sprünge ignorieren
-          if (step >= 0.7 && step <= 25) {
-            this.distanceMeters = Math.min(this.targetMeters, this.distanceMeters + step);
-          }
-
-          this.lastPos = current;
-
-          if (this.distanceMeters >= this.targetMeters) {
-            this.distanceMeters = this.targetMeters;
-            this.completeAutomatically();
-          }
+        if (this.lastPos) {
+          const step = this.haversineMeters(this.lastPos.lat, this.lastPos.lng, cur.lat, cur.lng);
+          this.distanceMeters += step;
         }
-      );
-    } catch {
-      this.state = 'idle';
-    }
+
+        this.lastPos = cur;
+
+        if (this.distanceMeters >= this.targetMeters) {
+          void this.completeAutomatically();
+        }
+      }
+    ) as unknown as string;
   }
 
-  async completeAutomatically() {
+  private async completeAutomatically(): Promise<void> {
     if (this.state !== 'tracking') return;
 
     this.state = 'completed';
@@ -122,33 +108,27 @@ export class DistanceTaskPage implements OnDestroy {
 
   cancelRun() {
     this.stopWatch();
-    this.state = 'idle';
-    this.distanceMeters = 0;
-    this.startPos = null;
-    this.lastPos = null;
+    this.nav.abort();
   }
 
   skipTask() {
     this.stopWatch();
-    this.state = 'completed';
-    this.distanceMeters = 0;
-    this.startPos = null;
-    this.lastPos = null;
+    this.nav.skip(this.currentPath());
+  }
+
+  nextTask() {
+    this.nav.next(this.currentPath());
   }
 
   get canFinish(): boolean {
     return this.state === 'tracking' && this.distanceMeters >= this.targetMeters;
   }
 
-  get progressRatio(): number {
-    return Math.max(0, Math.min(1, this.distanceMeters / this.targetMeters));
-  }
-
   get distanceLabel(): string {
-    return `${Math.round(this.distanceMeters)} / ${this.targetMeters} m`;
+    return `${Math.round(this.distanceMeters)} m`;
   }
 
-  get startButtonText(): string {
+  get buttonText(): string {
     return this.state === 'tracking' ? 'Tracking läuft…' : 'Tracking starten';
   }
 
@@ -193,5 +173,9 @@ export class DistanceTaskPage implements OnDestroy {
 
   ngOnDestroy(): void {
     this.stopWatch();
+  }
+
+  private currentPath(): string {
+    return this.router.url.split('?')[0];
   }
 }
