@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TaskNavigationService } from '../services/task-navigation.service';
@@ -10,12 +10,13 @@ import {
   IonCard,
   IonCardContent,
   IonButton,
-  IonFooter
+  IonFooter,
 } from '@ionic/angular/standalone';
 
 import { Geolocation } from '@capacitor/geolocation';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { LeaderboardService } from '../leaderboard.service';
+import { Subscription, timer } from 'rxjs';
 
 type TaskState = 'idle' | 'tracking' | 'completed';
 
@@ -31,7 +32,7 @@ type TaskState = 'idle' | 'tracking' | 'completed';
     IonCard,
     IonCardContent,
     IonButton,
-    IonFooter
+    IonFooter,
   ],
   templateUrl: './distance-task.page.html',
   styleUrl: './distance-task.page.scss',

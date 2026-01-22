@@ -70,6 +70,7 @@ export class HomePage {
       text: 'Los gehts',
       role: 'confirm',
       handler: async (data: { playerName?: string }) => {
+        this.leaderboardService.reset()
         const name = (data?.playerName ?? '').trim();
 
         if (!name) {
