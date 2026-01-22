@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TaskNavigationService } from '../services/task-navigation.service';
@@ -10,11 +10,12 @@ import {
   IonCard,
   IonCardContent,
   IonButton,
-  IonFooter
+  IonFooter,
 } from '@ionic/angular/standalone';
 
 import { Network, type ConnectionStatus } from '@capacitor/network';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { LeaderboardService } from '../leaderboard.service';
 
 type UiState = 'idle' | 'running' | 'completed';
 
@@ -30,7 +31,7 @@ type UiState = 'idle' | 'running' | 'completed';
     IonCard,
     IonCardContent,
     IonButton,
-    IonFooter
+    IonFooter,
   ],
   templateUrl: './wlan-task.page.html',
   styleUrl: './wlan-task.page.scss',
@@ -113,7 +114,8 @@ export class WlanTaskPage implements OnDestroy {
   }
 
   private applyStatus(status: ConnectionStatus): void {
-    const isWifi = status.connected === true && status.connectionType === 'wifi';
+    const isWifi =
+      status.connected === true && status.connectionType === 'wifi';
 
     if (!this.step1Connected) {
       if (isWifi) this.step1Connected = true;

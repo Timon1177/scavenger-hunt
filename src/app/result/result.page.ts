@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonHeader,
@@ -8,8 +8,9 @@ import {
   IonCard,
   IonCardContent,
   IonButton,
-  IonFooter
+  IonFooter,
 } from '@ionic/angular/standalone';
+import { LeaderboardService } from '../leaderboard.service';
 
 @Component({
   selector: 'app-result',
@@ -23,7 +24,7 @@ import {
     IonCard,
     IonCardContent,
     IonButton,
-    IonFooter
+    IonFooter,
   ],
   templateUrl: './result.page.html',
   styleUrl: './result.page.scss',
@@ -36,10 +37,12 @@ export class ResultPage {
   description =
     'Die Durchführung wird gespeichert und das Resultat kann ans Online-Leaderboard gesendet werden.';
 
-  name = 'Kay';
+  private leaderboardService = inject(LeaderboardService);
+
+  name = this.leaderboardService.user;
   duration = '12:43';
-  schnitzel = 6;
-  kartoffeln = 3;
+  schnitzel = this.leaderboardService.schnitzel;
+  kartoffeln = this.leaderboardService.potato;
 
   save(): void {
     // placeholder: später API/Storage
