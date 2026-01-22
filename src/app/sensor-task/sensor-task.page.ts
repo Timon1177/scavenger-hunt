@@ -1,5 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router,RouterLink } from '@angular/router';
 import {
   IonHeader,
   IonToolbar,
@@ -46,7 +47,7 @@ export class SensorTaskPage implements OnDestroy {
   private tickTimer: any = null;
 
   // Detection tuning
-  private requiredHoldMs = 5000; 
+  private requiredHoldMs = 5000;
   private holdMs = 0;
 
   private lastTs = 0;
