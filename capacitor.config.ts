@@ -5,10 +5,6 @@ const config: CapacitorConfig = {
   appName: 'Schnitzeljagd',
   webDir: 'www',
   bundledWebRuntime: false,
-  server: {
-      url: 'http://10.10.16.140:4200',
-      cleartext: true
-    }
 };
 
 export default config;

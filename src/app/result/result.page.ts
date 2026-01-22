@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import {
   IonHeader,
   IonToolbar,
@@ -30,6 +31,9 @@ import { LeaderboardService } from '../leaderboard.service';
   styleUrl: './result.page.scss',
 })
 export class ResultPage {
+
+  constructor(private router: Router) {
+    }
   headerTitle = 'Ergebnis';
   headerSubtitle = 'Alles auf einen Blick';
 
@@ -49,7 +53,7 @@ export class ResultPage {
   }
 
   goStart(): void {
-    // placeholder: später routing
+        this.router.navigate(['/home']);
   }
 
   goLeaderboard(): void {
