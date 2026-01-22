@@ -18,6 +18,7 @@ import {
 
 import { Geolocation } from '@capacitor/geolocation';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { ActivatedRoute } from '@angular/router';
 
 type TaskState = 'idle' | 'tracking' | 'completed';
 
