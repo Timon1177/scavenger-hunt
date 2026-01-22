@@ -1,8 +1,8 @@
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
 import { TaskNavigationService } from '../services/task-navigation.service';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { Router,RouterLink } from '@angular/router';
 import {
   IonHeader,
   IonToolbar,

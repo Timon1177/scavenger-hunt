@@ -1,3 +1,4 @@
+// qr-scan-task.page.ts
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -12,9 +13,10 @@ import {
   IonButton,
   IonFooter,
   IonChip,
-  IonLabel
+  IonLabel,
 } from '@ionic/angular/standalone';
 
+import { Camera } from '@capacitor/camera';
 import { Html5Qrcode } from 'html5-qrcode';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
@@ -34,7 +36,7 @@ type TaskState = 'idle' | 'scanning' | 'matched' | 'completed';
     IonButton,
     IonFooter,
     IonChip,
-    IonLabel
+    IonLabel,
   ],
   templateUrl: './qr-scan-task.page.html',
   styleUrl: './qr-scan-task.page.scss',
@@ -45,8 +47,10 @@ export class QrScanTaskPage implements OnDestroy {
 
   title = 'QR Scan';
   subtitle = 'Pflichtaufgabe (!)';
+
   taskTitle = 'Kamera QR';
-  taskDesc = 'Scanne den QR-Code und vergleiche den Inhalt mit dem erwarteten Text.';
+  taskDesc =
+    'Scanne den QR-Code und vergleiche den Inhalt mit dem erwarteten Text.';
 
   expectedText = 'POSTEN-03';
 
@@ -56,8 +60,21 @@ export class QrScanTaskPage implements OnDestroy {
   private qr: Html5Qrcode | null = null;
   private readonly regionId = 'qr-region';
 
+  async ionViewWillEnter(): Promise<void> {
+    // Nur checken/redirecten (keine Requests hier!)
+    try {
+      const p = await Camera.checkPermissions();
+      const ok = p.camera === 'granted';
+      if (!ok) this.router.navigateByUrl('/permissions');
+    } catch {
+      // html5-qrcode wird spätestens beim start() prompten
+    }
+  }
+
   get statusText(): string {
-    return this.state === 'matched' || this.state === 'completed' ? 'ok' : 'wartet';
+    return this.state === 'matched' || this.state === 'completed'
+      ? 'ok'
+      : 'wartet';
   }
 
   get canFinish(): boolean {
