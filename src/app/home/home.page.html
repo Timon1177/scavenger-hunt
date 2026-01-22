@@ -1,29 +1,55 @@
-<ion-header [translucent]="true">
+<ion-header [translucent]="true" class="home-header">
   <ion-toolbar>
-    <ion-title>Schnitzeljagd</ion-title>
+    <ion-title>
+      <div class="topbar">
+        <div class="app-icon">★</div>
+        <div class="topbar-text">
+          <div class="app-title">Schnitzeljagd</div>
+          <div class="app-subtitle">Schlicht. Schnell. Punkte.</div>
+        </div>
+      </div>
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>NEUER LAUF</ion-card-title>
-      <ion-card-subtitle>Bereit für die nächste Runde?</ion-card-subtitle>
-    </ion-card-header>
-    <ion-card-content>
-      Gib deinen Namen ein, starte die Schnitzeljagd und löse Aufgaben mit
-      Standort, Kamera und Sensoren.
-    </ion-card-content>
-  </ion-card>
+<ion-content [fullscreen]="true" class="home">
+  <div class="bg"></div>
 
-  <ion-card>
-    <ion-button id="new-hunt">Schnitzeljagd starten</ion-button>
-    <ion-chip class="perms-notice">
-      <ion-icon name="radio-button-on" color="warning"></ion-icon>
-      <ion-label>Kamera & Standort benötig</ion-label>
-    </ion-chip>
-    <a routerLink="/permissions">User profile</a>
-  </ion-card>
+  <div class="wrap">
+    <ion-card class="card main-card">
+      <ion-card-header>
+        <div class="badge">NEUER LAUF</div>
+        <ion-card-title class="headline">Bereit für die nächste Runde?</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content class="copy">
+        Gib deinen Namen ein, starte die Schnitzeljagd und löse Aufgaben mit Standort, Kamera und Sensoren.
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card class="card cta-card">
+      <ion-card-content>
+        <ion-button id="new-hunt" expand="block" size="large" class="cta-btn">
+          <span class="play">▶</span>
+          Schnitzeljagd starten
+        </ion-button>
+
+        <div class="meta-row">
+          <ion-chip class="perms-notice">
+            <ion-icon name="radio-button-on" color="warning"></ion-icon>
+            <ion-label>Kamera &amp; Standort benötig</ion-label>
+          </ion-chip>
+
+          <a class="profile-link" routerLink="/permissions">User profile</a>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <div class="spacer"></div>
+
+    <ion-button expand="block" fill="outline" class="leaderboard-btn" routerLink="/leaderboard">
+      Leaderboard
+    </ion-button>
 
     <ion-alert
       #nameAlert
@@ -34,10 +60,11 @@
       backdropDismiss="false"
     ></ion-alert>
 
-  <ion-alert
-    #errorAlert
-    header="Fehler"
-    message="Bitte gib zuerst deinen Namen ein."
-    [buttons]="['OK']"
-  ></ion-alert>
+    <ion-alert
+      #errorAlert
+      header="Fehler"
+      message="Bitte gib zuerst deinen Namen ein."
+      [buttons]="['OK']"
+    ></ion-alert>
+  </div>
 </ion-content>

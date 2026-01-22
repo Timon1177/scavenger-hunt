@@ -8,49 +8,6 @@
   <div class="shell">
     <ion-card class="task-card">
       <ion-card-content>
-<<<<<<< HEAD
-        <div class="task-head">
-          <div class="dot"></div>
-          <div>
-            <div class="task-title">{{ headline }}</div>
-            <div class="task-sub">{{ description }}</div>
-          </div>
-        </div>
-
-        <div class="panel">
-          <div class="perm-row">
-            <div class="perm-left">
-              <span class="dot-mini" [class.ok]="dotClass(locationPerm) === 'ok'" [class.bad]="dotClass(locationPerm) === 'bad'"></span>
-              <div class="perm-text">
-                <div class="perm-title">Standort</div>
-                <div class="perm-sub">{{ labelFor(locationPerm) }}</div>
-              </div>
-            </div>
-
-            <ion-button fill="clear" class="perm-btn" (click)="requestAll()">
-              Erlauben
-            </ion-button>
-          </div>
-
-          <div class="perm-row">
-            <div class="perm-left">
-              <span class="dot-mini" [class.ok]="dotClass(cameraPerm) === 'ok'" [class.bad]="dotClass(cameraPerm) === 'bad'"></span>
-              <div class="perm-text">
-                <div class="perm-title">Kamera</div>
-                <div class="perm-sub">{{ labelFor(cameraPerm) }}</div>
-              </div>
-            </div>
-
-            <ion-button fill="clear" class="perm-btn" (click)="requestAll()">
-              Erlauben
-            </ion-button>
-          </div>
-
-          <ion-button expand="block" size="large" class="primary" (click)="requestAll()">
-            Berechtigungen anfragen
-          </ion-button>
-        </div>
-=======
         <div class="subline">{{ subtitle }}</div>
 
         <div class="section-label">SICHERHEIT</div>
@@ -63,9 +20,11 @@
               <span
                 class="dot-mini"
                 [class.ok]="dotClass(locationPerm) === 'ok'"
+                [class.bad]="dotClass(locationPerm) === 'bad'"
               ></span>
               <span>Standort</span>
             </div>
+
             <div class="pill" [class.ok]="locationPerm === 'granted'">
               {{ labelFor(locationPerm) }}
             </div>
@@ -76,24 +35,20 @@
               <span
                 class="dot-mini"
                 [class.ok]="dotClass(cameraPerm) === 'ok'"
+                [class.bad]="dotClass(cameraPerm) === 'bad'"
               ></span>
               <span>Kamera</span>
             </div>
+
             <div class="pill" [class.ok]="cameraPerm === 'granted'">
               {{ labelFor(cameraPerm) }}
             </div>
           </div>
         </div>
 
-        <ion-button
-          expand="block"
-          size="large"
-          class="primary"
-          (click)="requestAll()"
-        >
+        <ion-button expand="block" size="large" class="primary" (click)="requestAll()">
           Berechtigungen erteilen
         </ion-button>
->>>>>>> f6e055704afb355bfe0b135b3b03141fdb09abbb
       </ion-card-content>
     </ion-card>
   </div>
@@ -101,20 +56,13 @@
 
 <ion-footer class="footer" translucent="true">
   <div class="footer-row">
-<<<<<<< HEAD
-    <ion-button fill="clear" class="footer-btn" (click)="back()">Zurück</ion-button>
+    <ion-button class="footer-btn" fill="clear" (click)="back()">Zurück</ion-button>
 
-    <ion-button class="footer-btn primary" [disabled]="!canContinue" (click)="next()">
-=======
-    <ion-button class="footer-btn" fill="clear" (click)="back()"
-    >Zurück</ion-button
-    >
     <ion-button
       class="footer-btn primary"
       [disabled]="!canContinue"
       (click)="next()"
     >
->>>>>>> f6e055704afb355bfe0b135b3b03141fdb09abbb
       Weiter
     </ion-button>
   </div>
