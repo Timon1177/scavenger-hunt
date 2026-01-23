@@ -52,8 +52,16 @@ export class LeaderboardPage implements OnInit {
       .subscribe((hunters) => (this.hunters = hunters));
   }
 
-  async getRuns(){
-    this.hunters = await this.leaderboardService.getRuns()
+  async getRuns() {
+    const allHunters = await this.leaderboardService.getRuns();
+
+    // Filter: only keep completed runs (with duration)
+    const completedHunters = allHunters.filter(
+      (hunter) => hunter.duration && hunter.duration > 0
+    );
+
+    // Sort: by duration ascending (fastest first)
+    this.hunters = completedHunters.sort((a, b) => a.duration - b.duration);
   }
 
   formatTime(milliseconds: number): string {
@@ -83,11 +91,11 @@ export class LeaderboardPage implements OnInit {
     }
   }
 
-  toHome(){
-    this.router.navigateByUrl('/home')
-    }
+  toHome() {
+    this.router.navigateByUrl('/home');
+  }
 
   ngOnInit() {
-    this.getRuns()
+    this.getRuns();
   }
 }
