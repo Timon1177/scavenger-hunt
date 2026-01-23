@@ -89,10 +89,11 @@ export class WlanTaskPage implements OnDestroy {
     this.state = 'completed';
     await this.cleanup();
 
-    this.nav.next(this.currentPath());
-     try {
+    try {
       await Haptics.impact({ style: ImpactStyle.Medium });
     } catch {}
+
+    this.nav.next(this.currentPath());
   }
 
   async skipTask(): Promise<void> {
