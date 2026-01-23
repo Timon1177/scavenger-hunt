@@ -69,7 +69,7 @@ export class QrScanTaskPage implements OnInit, OnDestroy {
   taskDesc =
     'Scanne den QR-Code und vergleiche den Inhalt mit dem erwarteten Text.';
 
-  expectedText = 'https://de.wikipedia.org';
+  expectedText = 'Hurrah! Du hast es geschaft';
 
   state: TaskState = 'idle';
   lastResult: string | null = null;
