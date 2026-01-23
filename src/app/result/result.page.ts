@@ -56,7 +56,9 @@ export class ResultPage {
   }
 
   save(): void {
+    this.saved = true;
     this.leaderboardService.saveRun()
+
   }
 
   async goStart(): Promise<void> {
