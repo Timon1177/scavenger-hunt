@@ -48,8 +48,9 @@ export class HomePage {
 
   private leaderboardService = inject(LeaderboardService);
   private huntTimer = inject(HuntTimerService);
+  private router = inject(Router);
 
-  constructor(private router: Router) {
+  constructor() {
     addIcons({ radioButtonOn });
   }
 
@@ -88,4 +89,8 @@ export class HomePage {
       },
     },
   ];
+
+  goToLeaderboard(): void {
+    this.router.navigateByUrl('/leaderboard');
+  }
 }
