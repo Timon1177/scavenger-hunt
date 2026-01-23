@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import {
   IonCard,
   IonCardContent,
@@ -34,9 +35,7 @@ import { iHunter } from '../ihunter';
 })
 export class LeaderboardPage implements OnInit {
   hunters: iHunter[] = [];
-
-  onlineHunters: iHunter[] = [];
-
+  private router = inject(Router);
   constructor() {
     addIcons({ radioButtonOn });
   }
@@ -53,7 +52,7 @@ export class LeaderboardPage implements OnInit {
       .subscribe((hunters) => (this.hunters = hunters));
       //this is for testing with the mock hunters
   }
-  
+
   async getRuns(){
     this.hunters = await this.leaderboardService.getRuns()
   }
@@ -89,10 +88,12 @@ export class LeaderboardPage implements OnInit {
     }
   }
 
+  toHome(){
+    this.router.navigateByUrl('/home')
+    }
+
   ngOnInit() {
     // this.getHunters(); for testing
     this.getRuns()
-    this.leaderboardService.sendToLeaderboard()
   }
-  
 }
