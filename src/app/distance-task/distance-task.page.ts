@@ -65,6 +65,7 @@ export class DistanceTaskPage implements OnDestroy {
   lastPos: { lat: number; lng: number } | null = null;
 
   private watchId: string | null = null;
+  private updateTimer: any = null;
   private pointsGiven = false;
 
   private currentPathValue = '';
@@ -142,6 +143,10 @@ export class DistanceTaskPage implements OnDestroy {
           }
         }
       )) as unknown as string;
+
+      this.updateTimer = setInterval(() => {
+        void this.updateDistanceNow();
+      }, 2000);
     } catch (e) {
       console.error('startTracking failed', e);
       this.stopWatch();
@@ -152,7 +157,7 @@ export class DistanceTaskPage implements OnDestroy {
     }
   }
 
-  async updateDistanceNow(): Promise<void> {
+  private async updateDistanceNow(): Promise<void> {
     if (this.state !== 'tracking') return;
     if (!this.startPos) return;
 
@@ -236,6 +241,11 @@ export class DistanceTaskPage implements OnDestroy {
         Geolocation.clearWatch({ id: this.watchId });
       } catch {}
       this.watchId = null;
+    }
+
+    if (this.updateTimer) {
+      clearInterval(this.updateTimer);
+      this.updateTimer = null;
     }
   }
 
