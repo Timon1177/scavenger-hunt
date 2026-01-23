@@ -15,6 +15,7 @@ import {
 } from '@ionic/angular/standalone';
 
 import { Network, ConnectionStatus } from '@capacitor/network';
+import { Subscription, timer } from 'rxjs';
 
 type TaskState = 'idle' | 'running' | 'completed';
 
@@ -39,7 +40,7 @@ export class WlanTaskPage implements OnDestroy {
   constructor(
     private nav: TaskNavigationService,
     private router: Router,
-    private zone: NgZone
+    private zone: NgZone,
   ) {}
 
   taskTitle = 'WLAN an / aus';
@@ -52,8 +53,25 @@ export class WlanTaskPage implements OnDestroy {
 
   private listener: any;
 
+  private subscription: Subscription | null = null;
+  private getsPotato: boolean = false;
+
+  ngOnInit(): void {
+    this.startTimer();
+  }
+
+  startTimer() {
+    if (!this.subscription) {
+      this.subscription = timer(60000, -1).subscribe(
+        (n) => (this.getsPotato = true),
+      );
+    }
+  }
+
   get canFinish(): boolean {
-    return this.wasConnected && this.wasDisconnected && this.state !== 'completed';
+    return (
+      this.wasConnected && this.wasDisconnected && this.state !== 'completed'
+    );
   }
 
   async startTask(): Promise<void> {
@@ -66,11 +84,14 @@ export class WlanTaskPage implements OnDestroy {
     const status = await Network.getStatus();
     this.handleStatus(status);
 
-    this.listener = await Network.addListener('networkStatusChange', (status) => {
-      this.zone.run(() => {
-        this.handleStatus(status);
-      });
-    });
+    this.listener = await Network.addListener(
+      'networkStatusChange',
+      (status) => {
+        this.zone.run(() => {
+          this.handleStatus(status);
+        });
+      },
+    );
   }
 
   private handleStatus(status: ConnectionStatus): void {
@@ -117,6 +138,10 @@ export class WlanTaskPage implements OnDestroy {
 
   ngOnDestroy(): void {
     void this.cleanup();
+    this.cleanup();
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   private currentPath(): string {
