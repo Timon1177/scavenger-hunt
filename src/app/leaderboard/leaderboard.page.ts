@@ -35,6 +35,8 @@ import { iHunter } from '../ihunter';
 export class LeaderboardPage implements OnInit {
   hunters: iHunter[] = [];
 
+  onlineHunters: iHunter[] = [];
+
   constructor() {
     addIcons({ radioButtonOn });
   }
@@ -90,5 +92,7 @@ export class LeaderboardPage implements OnInit {
   ngOnInit() {
     // this.getHunters(); for testing
     this.getRuns()
+    this.leaderboardService.sendToLeaderboard()
   }
+  
 }
