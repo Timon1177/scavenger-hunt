@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonHeader,
@@ -32,7 +32,7 @@ import { TaskNavigationService } from '../services/task-navigation.service';
   templateUrl: './result.page.html',
   styleUrl: './result.page.scss',
 })
-export class ResultPage {
+export class ResultPage implements OnInit{
   headerTitle = 'Ergebnis';
   headerSubtitle = 'Alles auf einen Blick';
 
@@ -56,7 +56,7 @@ export class ResultPage {
   }
 
   save(): void {
-    this.leaderboardService.saveRun()
+    this.leaderboardService.sendToLeaderboard()
   }
 
   async goStart(): Promise<void> {
@@ -66,5 +66,9 @@ export class ResultPage {
 
   goLeaderboard(): void {
     this.nav.leaderboard();
+  }
+
+  ngOnInit(): void {
+    this.leaderboardService.saveRun()
   }
 }
