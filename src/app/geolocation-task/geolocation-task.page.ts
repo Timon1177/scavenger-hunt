@@ -73,7 +73,7 @@ export class GeolocationTaskPage implements OnDestroy {
 
   startTimer() {
     if (!this.subscription) {
-      this.subscription = timer(600000, -1).subscribe(
+      this.subscription = timer(60000, -1).subscribe(
         (n) => (this.getsPotato = true),
       );
     }
