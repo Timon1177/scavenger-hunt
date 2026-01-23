@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TaskNavigationService } from '../services/task-navigation.service';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -39,7 +39,7 @@ type TaskState = 'idle' | 'running' | 'completed';
   templateUrl: './sensor-task.page.html',
   styleUrls: ['./sensor-task.page.scss'],
 })
-export class SensorTaskPage implements OnDestroy {
+export class SensorTaskPage implements OnDestroy, OnInit {
   constructor(
     private nav: TaskNavigationService,
     private router: Router,
@@ -49,8 +49,6 @@ export class SensorTaskPage implements OnDestroy {
   private subscription: Subscription | null = null;
   private getsPotato: boolean = false;
 
-  title = 'Sensor';
-  subtitle = 'Bewegung / Lage';
   taskTitle = 'Sensor-Aufgabe';
   taskDesc = 'Stelle das Gerät kurz auf den Kopf und warte, bis die Aufgabe abgeschlossen ist.';
   state: TaskState = 'idle';
@@ -65,6 +63,13 @@ export class SensorTaskPage implements OnDestroy {
 
   ngOnInit(): void {
     this.startTimer();
+  }
+
+  ngOnDestroy(): void {
+    this.cleanup();
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   startTimer() {
@@ -193,13 +198,6 @@ export class SensorTaskPage implements OnDestroy {
       try {
         await anyDeviceOrientation.requestPermission();
       } catch {}
-    }
-  }
-
-  ngOnDestroy(): void {
-    this.cleanup();
-    if (this.subscription) {
-      this.subscription.unsubscribe();
     }
   }
 

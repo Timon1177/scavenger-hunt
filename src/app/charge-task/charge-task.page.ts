@@ -13,7 +13,7 @@ import {
   IonFooter,
 } from '@ionic/angular/standalone';
 
-import { Device, type BatteryInfo } from '@capacitor/device';
+import { Device } from '@capacitor/device';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { LeaderboardService } from '../leaderboard.service';
 import { Subscription, timer } from 'rxjs';
@@ -44,17 +44,12 @@ export class ChargeTaskPage implements OnInit, OnDestroy {
   ) {}
 
   private leaderboardService = inject(LeaderboardService);
-  title = 'Laden';
-  subtitle = 'Device Status';
   taskTitle = 'Gerät laden';
   taskDesc = 'Verbinde dein Gerät mit Strom, um die Aufgabe zu erledigen.';
 
   state: UiState = 'idle';
-
   statusText = 'Nicht geladen';
   isCharging: boolean | null = null;
-
-  private lastBattery: BatteryInfo | null = null;
 
   private subscription: Subscription | null = null;
   private getsPotato: boolean = false;
@@ -84,11 +79,8 @@ export class ChargeTaskPage implements OnInit, OnDestroy {
   async checkStatus(): Promise<void> {
     try {
       const info = await Device.getBatteryInfo();
-      this.lastBattery = info;
-
       this.isCharging = info.isCharging ?? null;
       this.statusText = this.isCharging ? 'Geladen' : 'Nicht geladen';
-
       this.state = 'checked';
     } catch {
       this.isCharging = null;

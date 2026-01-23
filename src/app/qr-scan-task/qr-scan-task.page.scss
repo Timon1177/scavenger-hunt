@@ -88,40 +88,10 @@
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.panel-title-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
 .panel-title {
   font-size: 13px;
   font-weight: 800;
   color: rgba(255, 255, 255, 0.85);
-}
-
-.scanner-box {
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px dashed rgba(255, 255, 255, 0.18);
-}
-
-.scanner-inner {
-  height: 230px;
-  border-radius: 14px;
-  background: rgba(0, 0, 0, 0.35);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  position: relative;
-}
-
-.scanner-placeholder {
-  color: rgba(255, 255, 255, 0.45);
-  font-weight: 700;
 }
 
 .qr-region {
@@ -131,13 +101,6 @@
 
 .qr-region.hidden {
   display: none;
-}
-
-.chips {
-  margin: 12px 0 12px;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
 }
 
 .chip {
