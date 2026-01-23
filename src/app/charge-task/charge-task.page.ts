@@ -15,7 +15,7 @@ import {
 
 import { Device } from '@capacitor/device';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { LeaderboardService } from '../leaderboard.service';
+import { LeaderboardService } from '../services/leaderboard.service';
 import { Subscription, timer } from 'rxjs';
 
 type UiState = 'idle' | 'checked' | 'completed';

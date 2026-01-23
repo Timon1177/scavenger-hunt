@@ -10,7 +10,7 @@ import {
   IonButton,
   IonFooter,
 } from '@ionic/angular/standalone';
-import { LeaderboardService } from '../leaderboard.service';
+import { LeaderboardService } from '../services/leaderboard.service';
 import { Router } from '@angular/router';
 import { HuntTimerService } from '../services/hunt-timer.service';
 import { TaskNavigationService } from '../services/task-navigation.service';

@@ -189,3 +189,199 @@ ion-button.finish.button-disabled {
   --background: linear-gradient(180deg, #3b82f6, #2563eb);
   --color: #fff;
 }
+
+.leaderboard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.leaderboard::-webkit-scrollbar {
+  width: 6px;
+}
+
+.leaderboard::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.leaderboard::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.4);
+  border-radius: 10px;
+}
+
+.leaderboard::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.6);
+}
+
+.leaderboard-row {
+  display: grid;
+  grid-template-columns: 50px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 220ms ease;
+}
+
+.leaderboard-row:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.leaderboard-row.first {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.12), rgba(251, 191, 36, 0.05));
+  border-color: rgba(251, 191, 36, 0.25);
+}
+
+.leaderboard-row.first:hover {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.18), rgba(251, 191, 36, 0.08));
+  border-color: rgba(251, 191, 36, 0.35);
+}
+
+.leaderboard-row.second {
+  background: linear-gradient(135deg, rgba(192, 192, 192, 0.1), rgba(192, 192, 192, 0.04));
+  border-color: rgba(192, 192, 192, 0.22);
+}
+
+.leaderboard-row.second:hover {
+  background: linear-gradient(135deg, rgba(192, 192, 192, 0.15), rgba(192, 192, 192, 0.07));
+  border-color: rgba(192, 192, 192, 0.32);
+}
+
+.leaderboard-row.third {
+  background: linear-gradient(135deg, rgba(205, 127, 50, 0.1), rgba(205, 127, 50, 0.04));
+  border-color: rgba(205, 127, 50, 0.22);
+}
+
+.leaderboard-row.third:hover {
+  background: linear-gradient(135deg, rgba(205, 127, 50, 0.15), rgba(205, 127, 50, 0.07));
+  border-color: rgba(205, 127, 50, 0.32);
+}
+
+.rank-badge {
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 18px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.6);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+}
+
+.rank-badge.rank-1 {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.25), rgba(251, 191, 36, 0.12));
+  color: #fbbf24;
+  border-color: rgba(251, 191, 36, 0.4);
+  box-shadow: 0 4px 15px rgba(251, 191, 36, 0.15);
+}
+
+.rank-badge.rank-2 {
+  background: linear-gradient(135deg, rgba(192, 192, 192, 0.22), rgba(192, 192, 192, 0.1));
+  color: #e8e8e8;
+  border-color: rgba(192, 192, 192, 0.35);
+  box-shadow: 0 4px 15px rgba(192, 192, 192, 0.1);
+}
+
+.rank-badge.rank-3 {
+  background: linear-gradient(135deg, rgba(205, 127, 50, 0.25), rgba(205, 127, 50, 0.12));
+  color: #d4a574;
+  border-color: rgba(205, 127, 50, 0.4);
+  box-shadow: 0 4px 15px rgba(205, 127, 50, 0.15);
+}
+
+.hunter-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.hunter-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.95);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hunter-date {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+}
+
+.hunter-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stat-item.time-display {
+  gap: 8px;
+}
+
+.time-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.time {
+  font-size: 18px;
+  font-weight: 900;
+  color: #3b82f6;
+  min-width: 60px;
+  text-align: right;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+}
+
+.stat-item.items {
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.potato,
+.schnitzel {
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 48px 16px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  font-weight: 500;
+}
