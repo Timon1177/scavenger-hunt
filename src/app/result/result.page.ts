@@ -35,7 +35,6 @@ import { TaskNavigationService } from '../services/task-navigation.service';
 export class ResultPage{
   headerTitle = 'Ergebnis';
   headerSubtitle = 'Alles auf einen Blick';
-
   headline = 'Du hast es geschafft.';
   description =
     'Die Durchführung wird gespeichert und das Resultat kann ans Online-Leaderboard gesendet werden.';
