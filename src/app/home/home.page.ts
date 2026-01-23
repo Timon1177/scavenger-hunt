@@ -79,7 +79,7 @@ export class HomePage {
         }
         await this.nameAlert.dismiss();
 
-        this.leaderboardService.setUser(name);
+        this.leaderboardService.setName(name);
 
         await this.huntTimer.start();
 

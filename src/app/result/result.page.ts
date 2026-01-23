@@ -45,7 +45,7 @@ export class ResultPage {
   private timer = inject(HuntTimerService);
   private nav = inject(TaskNavigationService);
 
-  name = this.leaderboardService.user;
+  name = this.leaderboardService.name;
   duration = '--:--';
   schnitzel = this.leaderboardService.schnitzel;
   kartoffeln = this.leaderboardService.potato;
@@ -56,7 +56,7 @@ export class ResultPage {
   }
 
   save(): void {
-    // placeholder: später API/Storage
+    this.leaderboardService.saveRun()
   }
 
   async goStart(): Promise<void> {

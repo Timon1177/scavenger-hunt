@@ -1,10 +1,12 @@
-import { Injectable } from '@angular/core';
+import { Injectable,inject } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
+import { LeaderboardService } from '../leaderboard.service';
 
 @Injectable({ providedIn: 'root' })
 export class HuntTimerService {
   private static readonly START_KEY = 'hunt_start_ts';
   private static readonly DURATION_KEY = 'hunt_duration_ms';
+  private leaderboardService = inject(LeaderboardService)
 
   async start(): Promise<void> {
     const now = Date.now();
@@ -27,6 +29,7 @@ export class HuntTimerService {
     const duration = Math.max(0, Date.now() - start);
     await Preferences.set({ key: HuntTimerService.DURATION_KEY, value: String(duration) });
     await Preferences.remove({ key: HuntTimerService.START_KEY });
+    this.leaderboardService.setDuration(duration)
     return duration;
   }
 

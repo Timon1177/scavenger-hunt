@@ -3,5 +3,5 @@ export interface iHunter {
     schnitzel: number,
     potato: number,
     date: Date,
-    time: number
+    duration: number
 }

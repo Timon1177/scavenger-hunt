@@ -8,20 +8,21 @@ import { Preferences } from '@capacitor/preferences';
   providedIn: 'root',
 })
 export class LeaderboardService {
-  #user = "";
+  #name = '';
   #potato = 0;
   #schnitzel = 0;
+  #duration: number | null = 0;
 
-  public get user() : string {
-    return this.#user
+  public get name(): string {
+    return this.#name;
   }
 
-  public get potato() : number {
-    return this.#potato
+  public get potato(): number {
+    return this.#potato;
   }
 
-  public get schnitzel() : number {
-    return this.#schnitzel
+  public get schnitzel(): number {
+    return this.#schnitzel;
   }
 
   getHunters(): Observable<iHunter[]> {
@@ -29,8 +30,8 @@ export class LeaderboardService {
     return hunters;
   }
 
-  async setUser(newUser: string) {
-    this.#user = newUser
+  setName(newname: string) {
+    this.#name = newname;
   }
 
   increasePoints(gotPotato: boolean) {
@@ -38,9 +39,53 @@ export class LeaderboardService {
     if (gotPotato == true) this.#potato += 1;
   }
 
-  reset(){
-    this.#schnitzel=0
-    this.#potato=0
-    this.#user=""
+  setDuration(duration: number | null) {
+    this.#duration = duration;
+  }
+
+  reset() {
+    this.#schnitzel = 0;
+    this.#potato = 0;
+    this.#name = '';
+    this.#duration = 0;
+  }
+
+  async saveRun() {
+    let runs = '1';
+    const ret = await Preferences.get({ key: 'runs' });
+    if (ret.value) {
+      runs = JSON.parse(ret.value);
+    }
+
+    await Preferences.set({
+      key: 'run' + runs,
+      value: JSON.stringify({
+        name: this.#name,
+        schnitzel: this.#schnitzel,
+        potato: this.#potato,
+        duration: this.#duration,
+        date: new Date(),
+      }),
+    });
+
+    await Preferences.set({
+      key: 'runs',
+      value: (Number(runs) + 1).toString(),
+    });
+  }
+
+  async getRuns(): Promise<iHunter[]> {
+    let keys = await Preferences.keys();
+    let hunters: iHunter[] = [];
+    for (let key of keys.keys) {
+      if (!(key == 'hunt_duration_ms' || key == 'runs')) {
+        const ret = await Preferences.get({ key: key });
+        if (ret.value) {
+          let hunter: iHunter = JSON.parse(ret.value);
+          hunters.push(hunter);
+        }
+      }
+    }
+    return hunters;
   }
 }

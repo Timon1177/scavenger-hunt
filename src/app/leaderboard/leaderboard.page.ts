@@ -9,7 +9,6 @@ import {
   IonTitle,
   IonContent,
   IonButton,
-  IonFooter,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { radioButtonOn } from 'ionicons/icons';
@@ -31,7 +30,6 @@ import { iHunter } from '../ihunter';
     IonButton,
     CommonModule,
     FormsModule,
-    IonFooter,
   ],
 })
 export class LeaderboardPage implements OnInit {
@@ -51,39 +49,46 @@ export class LeaderboardPage implements OnInit {
     this.leaderboardService
       .getHunters()
       .subscribe((hunters) => (this.hunters = hunters));
+      //this is for testing with the mock hunters
+  }
+  
+  async getRuns(){
+    this.hunters = await this.leaderboardService.getRuns()
   }
 
   formatTime(minutes: number): string {
-    const totalSeconds = Math.floor(minutes * 60);
+    const totalMiliseconds = Math.floor(minutes * 60);
 
-    const hours = Math.floor(totalSeconds / 3600);
-    const remaining = totalSeconds % 3600;
-    const mins = Math.floor(remaining / 60);
-    const seconds = remaining % 60;
+    const hours = Math.floor(totalMiliseconds / 3600000);
+    const remaining = totalMiliseconds % 3600000;
+    const mins = Math.floor(remaining / 60000);
+    const seconds = remaining % 60000;
 
     const pad = (n: number) => n.toString().padStart(2, '0');
 
     return `${pad(hours)}:${pad(mins)}:${pad(seconds)}`;
   }
 
-  formatDate(huntDay: Date) {
+  formatDate(huntDate: Date) {
     const today = Date.now();
+    const formatedHuntDate = new Date(huntDate)
 
-    if (today - huntDay.getTime() <= 0) {
+    if (today - formatedHuntDate.getTime() <= 0) {
       return 'The fucking future';
     }
-    if (today - huntDay.getTime() <= 86400000) {
+    if (today - formatedHuntDate.getTime() <= 86400000) {
       return 'Heute';
-    } else if (today - huntDay.getTime() <= 172800000) {
+    } else if (today - formatedHuntDate.getTime() <= 172800000) {
       return 'Gestern';
     } else {
       return (
-        huntDay.getDate().toString() + ' ' + (huntDay.getMonth() + 1).toString()
+        formatedHuntDate.getDate().toString() + ' ' + (formatedHuntDate.getMonth() + 1).toString()
       );
     }
   }
 
   ngOnInit() {
-    this.getHunters();
+    // this.getHunters(); for testing
+    this.getRuns()
   }
 }

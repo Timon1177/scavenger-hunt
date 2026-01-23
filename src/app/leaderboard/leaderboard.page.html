@@ -22,27 +22,22 @@
           <div class="panel-head">
             <div class="panel-title">Online</div>
           </div>
-          @for (hunter of hunters; track hunter.name) {
+          @for (hunter of hunters; track hunter.date) {
           <div class="stats">
             <div class="stat">
               <div class="stat-label">{{hunter.name}}</div>
               <div class="stat-value">
-                {{formatDate(hunter.date) + " " +formatTime(hunter.time) + " " + "🥔" + hunter.potato + " " + "🥩"
+                {{formatDate(hunter.date) + " " +formatTime(hunter.duration) + " " + "🥔" + hunter.potato + " " + "🥩"
                 + hunter.schnitzel}}
               </div>
             </div>
           </div>
           }
           <ion-button expand="block" size="large" class="finish">
-            Abschliessen
+            Start
           </ion-button>
         </div>
       </ion-card-content>
-      <ion-footer class="footer" translucent="true">
-        <div class="footer-row">
-          <ion-button class="footer-btn primary">Start</ion-button>
-        </div>
-      </ion-footer>
     </ion-card>
   </div>
 </ion-content>
