@@ -88,4 +88,34 @@ export class LeaderboardService {
     }
     return hunters;
   }
+
+  async sendToLeaderboard() {
+    const url = 'https://docs.google.com/forms/u/0/d/e/1FAIpQLSc9v68rbCckYwcIekRLOaVZ0Qdm3eeh1xCEkgpn3d7pParfLQ/formResponse';
+
+    const name = this.#name || 'Anonym';
+    const schnitzel = this.#schnitzel;
+    const potato = this.#potato;
+
+    const duration = this.#duration;
+
+    const body = "entry.1860183935=${encodeURIComponent(name)}" +
+      "&entry.564282981=${schnitzel}" +
+      "&entry.1079317865=${potato}" +
+      "&entry.985590604=${duration}";
+
+    try {
+      await fetch(url, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: body
+      });
+
+      console.log('Daten erfolgreich an Google Forms gesendet');
+    } catch (error) {
+      console.error('Fehler beim Senden:', error);
+    }
+  }
 }
