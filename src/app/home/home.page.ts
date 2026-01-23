@@ -17,7 +17,7 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { radioButtonOn } from 'ionicons/icons';
-import { LeaderboardService } from '../leaderboard.service';
+import { LeaderboardService } from '../services/leaderboard.service';
 import { HuntTimerService } from '../services/hunt-timer.service';
 
 @Component({

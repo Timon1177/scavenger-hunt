@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonHeader,
@@ -10,7 +10,7 @@ import {
   IonButton,
   IonFooter,
 } from '@ionic/angular/standalone';
-import { LeaderboardService } from '../leaderboard.service';
+import { LeaderboardService } from '../services/leaderboard.service';
 import { Router } from '@angular/router';
 import { HuntTimerService } from '../services/hunt-timer.service';
 import { TaskNavigationService } from '../services/task-navigation.service';
@@ -32,7 +32,7 @@ import { TaskNavigationService } from '../services/task-navigation.service';
   templateUrl: './result.page.html',
   styleUrls: ['./result.page.scss'],
 })
-export class ResultPage {
+export class ResultPage{
   headerTitle = 'Ergebnis';
   headerSubtitle = 'Alles auf einen Blick';
   headline = 'Du hast es geschafft.';
@@ -53,6 +53,7 @@ export class ResultPage {
 
   async ionViewWillEnter(): Promise<void> {
     const ms = await this.timer.stop();
+    this.leaderboardService.saveRun()
     this.duration = this.timer.formatMs(ms ?? 0);
   }
 
@@ -61,7 +62,7 @@ export class ResultPage {
     this.saved = true;
 
     try {
-      this.leaderboardService.saveRun();
+      this.leaderboardService.sendToLeaderboard();
     } catch (e) {
       console.error('saveRun failed', e);
       this.saved = false;

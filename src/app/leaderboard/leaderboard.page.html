@@ -20,21 +20,41 @@
       <ion-card-content>
         <div class="panel">
           <div class="panel-head">
-            <div class="panel-title">Online</div>
+            <div class="panel-title">🏆 Rankings</div>
           </div>
-          @for (hunter of hunters; track hunter.date) {
-          <div class="stats">
-            <div class="stat">
-              <div class="stat-label">{{hunter.name}}</div>
-              <div class="stat-value">
-                {{formatDate(hunter.date) + " " +formatTime(hunter.duration) + " " + "🥔" + hunter.potato + " " + "🥩"
-                + hunter.schnitzel}}
-              </div>
+          
+          @if (hunters.length > 0) {
+            <div class="leaderboard">
+              @for (hunter of hunters; track hunter.date; let i = $index) {
+                <div class="leaderboard-row" [class.first]="i === 0" [class.second]="i === 1" [class.third]="i === 2">
+                  <div class="rank-badge" [class]="'rank-' + (i + 1)">
+                    {{ i + 1 }}
+                  </div>
+                  <div class="hunter-info">
+                    <div class="hunter-name">{{ hunter.name }}</div>
+                    <div class="hunter-date">{{ formatDate(hunter.date) }}</div>
+                  </div>
+                  <div class="hunter-stats">
+                    <div class="stat-item time-display">
+                      <span class="time-label">Zeit:</span>
+                      <span class="time">{{ formatTime(hunter.duration) }}</span>
+                    </div>
+                    <div class="stat-item items">
+                      <span class="potato" [title]="'Kartoffeln: ' + hunter.potato">🥔{{ hunter.potato }}</span>
+                      <span class="schnitzel" [title]="'Schnitzel: ' + hunter.schnitzel">🥩{{ hunter.schnitzel }}</span>
+                    </div>
+                  </div>
+                </div>
+              }
             </div>
-          </div>
+          } @else {
+            <div class="empty-state">
+              <p>Keine Durchführungen vorhanden</p>
+            </div>
           }
+          
           <ion-button expand="block" size="large" class="finish" (click)="toHome()">
-            Start
+            🏠 Start
           </ion-button>
         </div>
       </ion-card-content>

@@ -1,5 +1,5 @@
-import { iHunter } from './ihunter';
-import { HUNTERS } from './mock-leaderboard';
+import { iHunter } from '../ihunter';
+import { HUNTERS } from '../mock-leaderboard';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { Preferences } from '@capacitor/preferences';
