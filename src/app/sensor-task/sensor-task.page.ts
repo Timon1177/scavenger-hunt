@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TaskNavigationService } from '../services/task-navigation.service';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -37,39 +37,39 @@ type TaskState = 'idle' | 'running' | 'completed';
     IonLabel,
   ],
   templateUrl: './sensor-task.page.html',
-  styleUrls: ['./sensor-task.page.scss'], // ✅ plural
+  styleUrls: ['./sensor-task.page.scss'],
 })
-export class SensorTaskPage implements OnDestroy {
+export class SensorTaskPage implements OnDestroy, OnInit {
   constructor(
     private nav: TaskNavigationService,
     private router: Router,
   ) {}
 
   private leaderboardService = inject(LeaderboardService);
-
-  title = 'Sensor';
-  subtitle = 'Bewegung / Lage';
-  taskTitle = 'Sensor-Aufgabe';
-  taskDesc =
-    'Stelle das Gerät kurz auf den Kopf und warte, bis die Aufgabe abgeschlossen ist.';
-
-  state: TaskState = 'idle';
-
-  progress = 0; // 0..100
-  private tickTimer: any = null;
-
-  private requiredHoldMs = 5000;
-  private holdMs = 0;
-  private lastTs = 0;
-
-  private upsideDown = false;
-  private orientationHandler?: (e: DeviceOrientationEvent) => void;
-
   private subscription: Subscription | null = null;
   private getsPotato: boolean = false;
 
+  taskTitle = 'Sensor-Aufgabe';
+  taskDesc = 'Stelle das Gerät kurz auf den Kopf und warte, bis die Aufgabe abgeschlossen ist.';
+  state: TaskState = 'idle';
+  progress = 0;
+
+  private tickTimer: any = null;
+  private requiredHoldMs = 5000;
+  private holdMs = 0;
+  private lastTs = 0;
+  private upsideDown = false;
+  private orientationHandler?: (e: DeviceOrientationEvent) => void;
+
   ngOnInit(): void {
     this.startTimer();
+  }
+
+  ngOnDestroy(): void {
+    this.cleanup();
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   startTimer() {
@@ -198,13 +198,6 @@ export class SensorTaskPage implements OnDestroy {
       try {
         await anyDeviceOrientation.requestPermission();
       } catch {}
-    }
-  }
-
-  ngOnDestroy(): void {
-    this.cleanup();
-    if (this.subscription) {
-      this.subscription.unsubscribe();
     }
   }
 

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, inject } from '@angular/core';
+import { Component, NgZone, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TaskNavigationService } from '../services/task-navigation.service';
@@ -13,11 +13,9 @@ import {
   IonFooter,
 } from '@ionic/angular/standalone';
 
-import { Network, type ConnectionStatus } from '@capacitor/network';
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { LeaderboardService } from '../leaderboard.service';
+import { Network, ConnectionStatus } from '@capacitor/network';
 
-type UiState = 'idle' | 'running' | 'completed';
+type TaskState = 'idle' | 'running' | 'completed';
 
 @Component({
   selector: 'app-wlan-task',
@@ -34,73 +32,63 @@ type UiState = 'idle' | 'running' | 'completed';
     IonFooter,
   ],
   templateUrl: './wlan-task.page.html',
-  styleUrl: './wlan-task.page.scss',
+  styleUrls: ['./wlan-task.page.scss'],
 })
 export class WlanTaskPage implements OnDestroy {
   constructor(
     private nav: TaskNavigationService,
     private router: Router,
+    private zone: NgZone
   ) {}
 
-  private leaderboardService = inject(LeaderboardService)
-
   taskTitle = 'WLAN an / aus';
-  taskDesc = 'Verbinde dich mit WLAN und trenne es wieder.';
+  taskDesc = 'Verbinde dich mit WLAN und trenne es danach wieder.';
 
-  state: UiState = 'idle';
+  state: TaskState = 'idle';
 
-  step1Connected = false;
-  step2Disconnected = false;
+  wasConnected = false;
+  wasDisconnected = false;
 
-  private removeListener: (() => Promise<void>) | null = null;
+  private listener: any;
 
   get canFinish(): boolean {
-    return this.step1Connected && this.step2Disconnected;
+    return this.wasConnected && this.wasDisconnected && this.state !== 'completed';
   }
 
   async startTask(): Promise<void> {
     if (this.state !== 'idle') return;
 
     this.state = 'running';
-    this.step1Connected = false;
-    this.step2Disconnected = false;
+    this.wasConnected = false;
+    this.wasDisconnected = false;
 
-    await this.syncOnce();
+    const status = await Network.getStatus();
+    this.handleStatus(status);
 
-    const listener = await Network.addListener(
-      'networkStatusChange',
-      async (status) => {
-        this.applyStatus(status);
+    this.listener = await Network.addListener('networkStatusChange', (status) => {
+      this.zone.run(() => {
+        this.handleStatus(status);
+      });
+    });
+  }
 
-        if (this.canFinish && this.state !== 'completed') {
-          await this.markCompleted();
-        }
-      },
-    );
+  private handleStatus(status: ConnectionStatus): void {
+    if (status.connected && status.connectionType === 'wifi') {
+      this.wasConnected = true;
+    }
 
-    this.removeListener = async () => {
-      listener.remove();
-    };
+    if (!status.connected && this.wasConnected) {
+      this.wasDisconnected = true;
+    }
   }
 
   async finishTask(): Promise<void> {
     if (!this.canFinish) return;
-    await this.markCompleted();
-    this.leaderboardService.increasePoints(false);
-  }
 
-  private async markCompleted(): Promise<void> {
     this.state = 'completed';
     await this.cleanup();
 
-    try {
-      await Haptics.impact({ style: ImpactStyle.Medium });
-    } catch {}
-  }
-
-  async cancelRun(): Promise<void> {
-    await this.cleanup();
-    this.nav.abort();
+    this.nav.next(this.currentPath());
   }
 
   async skipTask(): Promise<void> {
@@ -108,40 +96,17 @@ export class WlanTaskPage implements OnDestroy {
     this.nav.skip(this.currentPath());
   }
 
-  nextTask(): void {
-    this.nav.next(this.currentPath());
-  }
-
-  private async syncOnce(): Promise<void> {
-    try {
-      const s = await Network.getStatus();
-      this.applyStatus(s);
-      if (this.canFinish && this.state !== 'completed') {
-        await this.markCompleted();
-      }
-    } catch {}
-  }
-
-  private applyStatus(status: ConnectionStatus): void {
-    const isWifi =
-      status.connected === true && status.connectionType === 'wifi';
-
-    if (!this.step1Connected) {
-      if (isWifi) this.step1Connected = true;
-      return;
-    }
-
-    if (!this.step2Disconnected) {
-      if (!isWifi) this.step2Disconnected = true;
-    }
+  cancelRun(): void {
+    void this.cleanup();
+    this.nav.abort();
   }
 
   private async cleanup(): Promise<void> {
-    if (this.removeListener) {
+    if (this.listener) {
       try {
-        await this.removeListener();
+        await this.listener.remove();
       } catch {}
-      this.removeListener = null;
+      this.listener = null;
     }
   }
 

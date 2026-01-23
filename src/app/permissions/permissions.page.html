@@ -46,13 +46,11 @@
           </div>
         </div>
 
-        <!-- Positiver Status -->
         <div *ngIf="canContinue" class="success">
           <div class="success-title">Alles bereit.</div>
           <div class="success-sub">Berechtigungen sind erteilt.</div>
         </div>
 
-        <!-- Ein Button für beide Berechtigungen -->
         <ion-button
           *ngIf="!canContinue"
           expand="block"
@@ -63,7 +61,6 @@
           Berechtigungen erteilen
         </ion-button>
 
-        <!-- Weiter Button, sobald alles erteilt ist -->
         <ion-button
           *ngIf="canContinue"
           expand="block"

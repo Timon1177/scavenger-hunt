@@ -51,22 +51,19 @@ export class GeolocationTaskPage implements OnDestroy {
   state: TaskState = 'idle';
   title = 'Geolocation';
   intro =
-    'Beweg dich in den Zielbereich. Sobald du nah genug bist, kannst du bestätigen.';
+    'Beweg dich zum Vorplatz der Migros Mattenhof. Sobald du nah genug bist, kannst du bestätigen.';
 
   target = {
-  lat: 47.02750,
-  lng: 8.30101
-};
+    lat: 47.02750,
+    lng: 8.30101,
+  };
 
   private leaderboardService = inject(LeaderboardService);
-
   targetRadiusMeters = 10;
-
   lastDistanceMeters: number | null = null;
   statusMode: 'too-far' | 'in-range' | 'unknown' = 'unknown';
 
   private timer: any = null;
-
   private subscription: Subscription | null = null;
   private getsPotato: boolean = false;
 
@@ -83,15 +80,12 @@ export class GeolocationTaskPage implements OnDestroy {
   }
 
   async ionViewWillEnter(): Promise<void> {
-    // Nur checken/redirecten (keine Requests hier!)
     try {
       const p = await Geolocation.checkPermissions();
       const ok =
         p.location === 'granted' || (p as any).coarseLocation === 'granted';
       if (!ok) this.router.navigateByUrl('/permissions');
-    } catch {
-      // im Web kann checkPermissions anders sein; spätestens getCurrentPosition promptet
-    }
+    } catch {}
   }
 
   async startTask(): Promise<void> {
@@ -158,25 +152,6 @@ export class GeolocationTaskPage implements OnDestroy {
     if (this.timer) {
       clearInterval(this.timer);
       this.timer = null;
-    }
-  }
-
-  private async ensurePermissions() {
-    try {
-      const perm = await Geolocation.checkPermissions();
-      const ok =
-        perm.location === 'granted' || perm.coarseLocation === 'granted';
-      if (ok) return;
-
-      const req = await Geolocation.requestPermissions({
-        permissions: ['location', 'coarseLocation'],
-      });
-
-      const ok2 =
-        req.location === 'granted' || req.coarseLocation === 'granted';
-      if (!ok2) throw new Error('No permission');
-    } catch {
-      return;
     }
   }
 

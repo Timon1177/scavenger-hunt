@@ -1,4 +1,3 @@
-// qr-scan-task.page.ts
 import { Component, inject, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -47,7 +46,6 @@ export class QrScanTaskPage implements OnInit, OnDestroy {
   ) {}
 
   private leaderboardService = inject(LeaderboardService);
-
   private subscription: Subscription | null = null;
   private getsPotato: boolean = false;
 
@@ -67,10 +65,9 @@ export class QrScanTaskPage implements OnInit, OnDestroy {
   subtitle = 'Pflichtaufgabe (!)';
 
   taskTitle = 'Kamera QR';
-  taskDesc =
-    'Scanne den QR-Code und vergleiche den Inhalt mit dem erwarteten Text.';
+  taskDesc = 'Scanne den QR-Code und vergleiche den Inhalt mit dem erwarteten Text.';
 
-  expectedText = 'https://de.wikipedia.org';
+  expectedText = 'Hurrah! Du hast es geschaft';
 
   state: TaskState = 'idle';
   lastResult: string | null = null;
@@ -84,12 +81,6 @@ export class QrScanTaskPage implements OnInit, OnDestroy {
       const ok = p.camera === 'granted';
       if (!ok) this.router.navigateByUrl('/permissions');
     } catch {}
-  }
-
-  get statusText(): string {
-    return this.state === 'matched' || this.state === 'completed'
-      ? 'ok'
-      : 'wartet';
   }
 
   get canFinish(): boolean {
@@ -109,7 +100,6 @@ export class QrScanTaskPage implements OnInit, OnDestroy {
         { facingMode: 'environment' },
         { fps: 10, qrbox: { width: 240, height: 240 }, aspectRatio: 1.0 },
         async (decodedText: string) => {
-          // WICHTIG: UI-Updates in Angular-Zone, sonst bleibt Button disabled
           this.zone.run(() => {
             this.lastResult = decodedText;
           });
@@ -136,10 +126,10 @@ export class QrScanTaskPage implements OnInit, OnDestroy {
   }
 
   async finishTask(): Promise<void> {
-  if (!this.canFinish) return;
-  this.state = 'completed';
-  this.nav.next(this.currentPath());
-}
+    if (!this.canFinish) return;
+    this.state = 'completed';
+    this.nav.next(this.currentPath());
+  }
 
   async cancelRun(): Promise<void> {
     await this.stopCamera();

@@ -47,7 +47,6 @@ export class PermissionsPage implements OnInit {
 
   title = 'Berechtigungen';
   subtitle = "Einmal erlauben, dann läuft's.";
-
   headline = 'Wir brauchen kurz Zugriff.';
   description =
     'Standort für Geolocation-Aufgaben und Kamera für QR-Scan. Ohne das kann die Schnitzeljagd nicht starten.';
@@ -86,7 +85,6 @@ export class PermissionsPage implements OnInit {
     this.router.navigateByUrl('/home');
   }
 
-  // bleibt drin (falls du es später wieder brauchst), wird aber nicht mehr im HTML verwendet
   next(): void {
     if (!this.canContinue) return;
     this.router.navigateByUrl('/geolocation-task');

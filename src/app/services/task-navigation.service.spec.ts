@@ -1,7 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-
 import { TaskNavigationService } from './task-navigation.service';
-
 describe('TaskNavigationService', () => {
   let service: TaskNavigationService;
 

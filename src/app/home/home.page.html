@@ -39,7 +39,7 @@
         <div class="meta-row">
           <ion-chip class="perms-notice">
             <ion-icon name="radio-button-on" color="warning"></ion-icon>
-            <ion-label>Kamera &amp; Standort benötig</ion-label>
+            <ion-label>Kamera &amp; Standort benötigt</ion-label>
           </ion-chip>
         </div>
       </ion-card-content>
@@ -51,7 +51,7 @@
       expand="block"
       fill="outline"
       class="leaderboard-btn"
-      routerLink="/leaderboard"
+      (click)="goToLeaderboard()"
     >
       Leaderboard
     </ion-button>

@@ -37,6 +37,7 @@
     "@ionic/storage-angular": "^4.0.0",
     "html5-qrcode": "^2.3.8",
     "ionicons": "^7.0.0",
+    "jest": "^30.2.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
