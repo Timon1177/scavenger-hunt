@@ -30,7 +30,7 @@ import { TaskNavigationService } from '../services/task-navigation.service';
     IonFooter,
   ],
   templateUrl: './result.page.html',
-  styleUrl: './result.page.scss',
+  styleUrls: ['./result.page.scss'],
 })
 export class ResultPage {
   headerTitle = 'Ergebnis';
@@ -45,6 +45,8 @@ export class ResultPage {
   private timer = inject(HuntTimerService);
   private nav = inject(TaskNavigationService);
 
+  saved = false;
+
   name = this.leaderboardService.name;
   duration = '--:--';
   schnitzel = this.leaderboardService.schnitzel;
@@ -56,9 +58,15 @@ export class ResultPage {
   }
 
   save(): void {
+    if (this.saved) return;
     this.saved = true;
-    this.leaderboardService.saveRun()
 
+    try {
+      this.leaderboardService.saveRun();
+    } catch (e) {
+      console.error('saveRun failed', e);
+      this.saved = false;
+    }
   }
 
   async goStart(): Promise<void> {
