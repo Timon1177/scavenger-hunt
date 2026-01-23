@@ -98,10 +98,10 @@ export class LeaderboardService {
 
     const duration = this.#duration;
 
-    const body = "entry.1860183935=${encodeURIComponent(name)}" +
-      "&entry.564282981=${schnitzel}" +
-      "&entry.1079317865=${potato}" +
-      "&entry.985590604=${duration}";
+    const body = "entry.1860183935=" + encodeURIComponent(name) +
+      "&entry.564282981=" + schnitzel +
+      "&entry.1079317865=" + potato +
+      "&entry.985590604=" + duration;
 
     try {
       await fetch(url, {
