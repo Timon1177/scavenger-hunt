@@ -47,7 +47,6 @@ export class PermissionsPage implements OnInit {
 
   title = 'Berechtigungen';
   subtitle = "Einmal erlauben, dann läuft's.";
-
   headline = 'Wir brauchen kurz Zugriff.';
   description =
     'Standort für Geolocation-Aufgaben und Kamera für QR-Scan. Ohne das kann die Schnitzeljagd nicht starten.';

@@ -46,7 +46,6 @@ export class QrScanTaskPage implements OnInit, OnDestroy {
   ) {}
 
   private leaderboardService = inject(LeaderboardService);
-
   private subscription: Subscription | null = null;
   private getsPotato: boolean = false;
 
@@ -66,8 +65,7 @@ export class QrScanTaskPage implements OnInit, OnDestroy {
   subtitle = 'Pflichtaufgabe (!)';
 
   taskTitle = 'Kamera QR';
-  taskDesc =
-    'Scanne den QR-Code und vergleiche den Inhalt mit dem erwarteten Text.';
+  taskDesc = 'Scanne den QR-Code und vergleiche den Inhalt mit dem erwarteten Text.';
 
   expectedText = 'Hurrah! Du hast es geschaft';
 
@@ -83,12 +81,6 @@ export class QrScanTaskPage implements OnInit, OnDestroy {
       const ok = p.camera === 'granted';
       if (!ok) this.router.navigateByUrl('/permissions');
     } catch {}
-  }
-
-  get statusText(): string {
-    return this.state === 'matched' || this.state === 'completed'
-      ? 'ok'
-      : 'wartet';
   }
 
   get canFinish(): boolean {

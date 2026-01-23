@@ -59,14 +59,11 @@ export class GeolocationTaskPage implements OnDestroy {
   };
 
   private leaderboardService = inject(LeaderboardService);
-
   targetRadiusMeters = 10;
-
   lastDistanceMeters: number | null = null;
   statusMode: 'too-far' | 'in-range' | 'unknown' = 'unknown';
 
   private timer: any = null;
-
   private subscription: Subscription | null = null;
   private getsPotato: boolean = false;
 
@@ -155,25 +152,6 @@ export class GeolocationTaskPage implements OnDestroy {
     if (this.timer) {
       clearInterval(this.timer);
       this.timer = null;
-    }
-  }
-
-  private async ensurePermissions() {
-    try {
-      const perm = await Geolocation.checkPermissions();
-      const ok =
-        perm.location === 'granted' || perm.coarseLocation === 'granted';
-      if (ok) return;
-
-      const req = await Geolocation.requestPermissions({
-        permissions: ['location', 'coarseLocation'],
-      });
-
-      const ok2 =
-        req.location === 'granted' || req.coarseLocation === 'granted';
-      if (!ok2) throw new Error('No permission');
-    } catch {
-      return;
     }
   }
 

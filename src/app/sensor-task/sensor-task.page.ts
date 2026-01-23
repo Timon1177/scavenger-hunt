@@ -46,27 +46,22 @@ export class SensorTaskPage implements OnDestroy {
   ) {}
 
   private leaderboardService = inject(LeaderboardService);
+  private subscription: Subscription | null = null;
+  private getsPotato: boolean = false;
 
   title = 'Sensor';
   subtitle = 'Bewegung / Lage';
   taskTitle = 'Sensor-Aufgabe';
-  taskDesc =
-    'Stelle das Gerät kurz auf den Kopf und warte, bis die Aufgabe abgeschlossen ist.';
-
+  taskDesc = 'Stelle das Gerät kurz auf den Kopf und warte, bis die Aufgabe abgeschlossen ist.';
   state: TaskState = 'idle';
-
   progress = 0;
-  private tickTimer: any = null;
 
+  private tickTimer: any = null;
   private requiredHoldMs = 5000;
   private holdMs = 0;
   private lastTs = 0;
-
   private upsideDown = false;
   private orientationHandler?: (e: DeviceOrientationEvent) => void;
-
-  private subscription: Subscription | null = null;
-  private getsPotato: boolean = false;
 
   ngOnInit(): void {
     this.startTimer();
