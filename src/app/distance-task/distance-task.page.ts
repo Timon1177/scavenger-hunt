@@ -1,7 +1,7 @@
-import { Component, inject, OnDestroy } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
-import { filter, Subscription } from 'rxjs';
+import { filter, Subscription, timer } from 'rxjs';
 
 import { TaskNavigationService } from '../services/task-navigation.service';
 import {
@@ -38,8 +38,11 @@ type TaskState = 'idle' | 'tracking' | 'completed';
   templateUrl: './distance-task.page.html',
   styleUrls: ['./distance-task.page.scss'],
 })
-export class DistanceTaskPage implements OnDestroy {
-  constructor(private nav: TaskNavigationService, private router: Router) {
+export class DistanceTaskPage implements OnInit, OnDestroy {
+  constructor(
+    private nav: TaskNavigationService,
+    private router: Router,
+  ) {
     this.currentPathValue = this.router.url.split('?')[0];
     this.routerSub = this.router.events
       .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
@@ -70,6 +73,21 @@ export class DistanceTaskPage implements OnDestroy {
 
   private currentPathValue = '';
   private routerSub: Subscription;
+
+  private subscription: Subscription | null = null;
+  private getsPotato: boolean = false;
+
+  ngOnInit(): void {
+    this.startTimer();
+  }
+
+  startTimer() {
+    if (!this.subscription) {
+      this.subscription = timer(600000, -1).subscribe(
+        (n) => (this.getsPotato = true),
+      );
+    }
+  }
 
   get progress(): number {
     if (this.targetMeters <= 0) return 0;
@@ -110,7 +128,10 @@ export class DistanceTaskPage implements OnDestroy {
         maximumAge: 0,
       });
 
-      this.startPos = { lat: start.coords.latitude, lng: start.coords.longitude };
+      this.startPos = {
+        lat: start.coords.latitude,
+        lng: start.coords.longitude,
+      };
       this.lastPos = { ...this.startPos };
 
       this.watchId = (await Geolocation.watchPosition(
@@ -133,7 +154,7 @@ export class DistanceTaskPage implements OnDestroy {
             this.startPos.lat,
             this.startPos.lng,
             cur.lat,
-            cur.lng
+            cur.lng,
           );
 
           this.distanceMeters = Math.max(this.distanceMeters, total);
@@ -141,7 +162,7 @@ export class DistanceTaskPage implements OnDestroy {
           if (this.distanceMeters >= this.targetMeters) {
             void this.completeAutomatically();
           }
-        }
+        },
       )) as unknown as string;
 
       this.updateTimer = setInterval(() => {
@@ -178,7 +199,7 @@ export class DistanceTaskPage implements OnDestroy {
         this.startPos.lat,
         this.startPos.lng,
         cur.lat,
-        cur.lng
+        cur.lng,
       );
 
       this.distanceMeters = Math.max(this.distanceMeters, total);
@@ -213,7 +234,7 @@ export class DistanceTaskPage implements OnDestroy {
 
     if (!this.pointsGiven) {
       this.pointsGiven = true;
-      queueMicrotask(() => this.leaderboardService.increasePoints(false));
+      queueMicrotask(() => this.leaderboardService.increasePoints(this.getsPotato));
     }
   }
 
@@ -259,7 +280,12 @@ export class DistanceTaskPage implements OnDestroy {
     if (!ok2) throw new Error('No location permission');
   }
 
-  private haversineMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  private haversineMeters(
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number,
+  ): number {
     const R = 6371000;
     const toRad = (v: number) => (v * Math.PI) / 180;
 
@@ -281,5 +307,8 @@ export class DistanceTaskPage implements OnDestroy {
   ngOnDestroy(): void {
     this.stopWatch();
     this.routerSub?.unsubscribe();
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 }
