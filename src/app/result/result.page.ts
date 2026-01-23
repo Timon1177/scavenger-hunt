@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonHeader,
@@ -30,9 +30,9 @@ import { TaskNavigationService } from '../services/task-navigation.service';
     IonFooter,
   ],
   templateUrl: './result.page.html',
-  styleUrl: './result.page.scss',
+  styleUrls: ['./result.page.scss'],
 })
-export class ResultPage {
+export class ResultPage implements OnInit{
   headerTitle = 'Ergebnis';
   headerSubtitle = 'Alles auf einen Blick';
 
@@ -45,6 +45,8 @@ export class ResultPage {
   private timer = inject(HuntTimerService);
   private nav = inject(TaskNavigationService);
 
+  saved = false;
+
   name = this.leaderboardService.name;
   duration = '--:--';
   schnitzel = this.leaderboardService.schnitzel;
@@ -56,7 +58,15 @@ export class ResultPage {
   }
 
   save(): void {
-    this.leaderboardService.saveRun()
+    if (this.saved) return;
+    this.saved = true;
+
+    try {
+      this.leaderboardService.sendToLeaderboard();
+    } catch (e) {
+      console.error('saveRun failed', e);
+      this.saved = false;
+    }
   }
 
   async goStart(): Promise<void> {
@@ -66,5 +76,9 @@ export class ResultPage {
 
   goLeaderboard(): void {
     this.nav.leaderboard();
+  }
+
+  ngOnInit(): void {
+    this.leaderboardService.saveRun()
   }
 }
