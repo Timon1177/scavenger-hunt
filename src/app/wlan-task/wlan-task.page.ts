@@ -84,7 +84,6 @@ export class WlanTaskPage implements OnDestroy {
     this.state = 'completed';
     await this.cleanup();
 
-    // ➜ direkt nächste Aufgabe
     this.nav.next(this.currentPath());
   }
 

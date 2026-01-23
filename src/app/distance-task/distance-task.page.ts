@@ -101,7 +101,6 @@ export class DistanceTaskPage implements OnDestroy {
     try {
       await Haptics.impact({ style: ImpactStyle.Medium });
     } catch {
-      // web ignore
     }
 
   }

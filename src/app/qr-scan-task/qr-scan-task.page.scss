@@ -182,7 +182,6 @@ ion-button.finish {
   backdrop-filter: blur(10px);
 }
 
-/* Default footer layout (falls andere Pages es nutzen) */
 .footer-row {
   padding: 10px 14px 14px;
   display: grid;
@@ -200,7 +199,6 @@ ion-button.finish {
   --color: #fff;
 }
 
-/* ✅ QR-Task Footer: Zurück IMMER zentriert, Skip rechts (nur wenn vorhanden) */
 .footer-row.center {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -208,13 +206,11 @@ ion-button.finish {
   gap: 12px;
 }
 
-/* Zurück Button zentriert in der Mitte */
 .footer-row.center .back-btn {
   grid-column: 2;
   justify-self: center;
 }
 
-/* Skip Button rechts */
 .footer-row.center .skip-btn {
   grid-column: 3;
   justify-self: end;

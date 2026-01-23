@@ -37,7 +37,7 @@ type TaskState = 'idle' | 'running' | 'completed';
     IonLabel,
   ],
   templateUrl: './sensor-task.page.html',
-  styleUrls: ['./sensor-task.page.scss'], // ✅ plural
+  styleUrls: ['./sensor-task.page.scss'],
 })
 export class SensorTaskPage implements OnDestroy {
   constructor(
@@ -55,7 +55,7 @@ export class SensorTaskPage implements OnDestroy {
 
   state: TaskState = 'idle';
 
-  progress = 0; // 0..100
+  progress = 0;
   private tickTimer: any = null;
 
   private requiredHoldMs = 5000;

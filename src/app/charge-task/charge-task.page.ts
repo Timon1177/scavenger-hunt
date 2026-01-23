@@ -108,7 +108,6 @@ export class ChargeTaskPage implements OnInit, OnDestroy {
 
     this.leaderboardService.increasePoints(this.getsPotato);
     this.nav.next(this.currentPath());
-
   }
 
   cancelRun(): void {

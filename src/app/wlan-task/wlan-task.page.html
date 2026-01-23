@@ -35,7 +35,6 @@
             <b>{{ wasDisconnected ? '✓' : '—' }}</b>
           </div>
 
-          <!-- Abschliessen: wird blau sobald erfolgreich -->
           <ion-button
             expand="block"
             size="large"
@@ -55,7 +54,6 @@
 
 <ion-footer class="footer" translucent="true">
   <div class="footer-row center">
-    <!-- Zurück immer zentriert -->
     <ion-button
       fill="clear"
       class="footer-btn back-btn"
@@ -64,7 +62,6 @@
       Zurück
     </ion-button>
 
-    <!-- Überspringen nur solange NICHT erfolgreich -->
     <ion-button
       class="footer-btn primary skip-btn"
       *ngIf="!canFinish"

@@ -83,14 +83,12 @@ export class GeolocationTaskPage implements OnDestroy {
   }
 
   async ionViewWillEnter(): Promise<void> {
-    // Nur checken/redirecten (keine Requests hier!)
     try {
       const p = await Geolocation.checkPermissions();
       const ok =
         p.location === 'granted' || (p as any).coarseLocation === 'granted';
       if (!ok) this.router.navigateByUrl('/permissions');
     } catch {
-      // im Web kann checkPermissions anders sein; spätestens getCurrentPosition promptet
     }
   }
 

@@ -56,7 +56,6 @@ export class ResultPage {
   }
 
   save(): void {
-    // placeholder: später API/Storage
   }
 
   async goStart(): Promise<void> {

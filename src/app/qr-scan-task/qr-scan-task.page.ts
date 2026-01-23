@@ -1,4 +1,3 @@
-// qr-scan-task.page.ts
 import { Component, inject, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -109,7 +108,6 @@ export class QrScanTaskPage implements OnInit, OnDestroy {
         { facingMode: 'environment' },
         { fps: 10, qrbox: { width: 240, height: 240 }, aspectRatio: 1.0 },
         async (decodedText: string) => {
-          // WICHTIG: UI-Updates in Angular-Zone, sonst bleibt Button disabled
           this.zone.run(() => {
             this.lastResult = decodedText;
           });
@@ -136,10 +134,10 @@ export class QrScanTaskPage implements OnInit, OnDestroy {
   }
 
   async finishTask(): Promise<void> {
-  if (!this.canFinish) return;
-  this.state = 'completed';
-  this.nav.next(this.currentPath());
-}
+    if (!this.canFinish) return;
+    this.state = 'completed';
+    this.nav.next(this.currentPath());
+  }
 
   async cancelRun(): Promise<void> {
     await this.stopCamera();
