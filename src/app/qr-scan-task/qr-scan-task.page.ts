@@ -129,6 +129,10 @@ export class QrScanTaskPage implements OnInit, OnDestroy {
     if (!this.canFinish) return;
     this.state = 'completed';
     this.nav.next(this.currentPath());
+
+    try {
+      await Haptics.impact({ style: ImpactStyle.Medium });
+    } catch {}
   }
 
   async cancelRun(): Promise<void> {
