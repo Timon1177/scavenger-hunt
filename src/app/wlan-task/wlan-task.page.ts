@@ -2,6 +2,7 @@ import { Component, NgZone, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TaskNavigationService } from '../services/task-navigation.service';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import {
   IonHeader,
   IonToolbar,
@@ -89,6 +90,9 @@ export class WlanTaskPage implements OnDestroy {
     await this.cleanup();
 
     this.nav.next(this.currentPath());
+     try {
+      await Haptics.impact({ style: ImpactStyle.Medium });
+    } catch {}
   }
 
   async skipTask(): Promise<void> {
