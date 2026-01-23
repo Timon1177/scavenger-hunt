@@ -16,7 +16,7 @@ import {
 import { Camera } from '@capacitor/camera';
 import { Html5Qrcode } from 'html5-qrcode';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { LeaderboardService } from '../leaderboard.service';
+import { LeaderboardService } from '../services/leaderboard.service';
 import { Subscription, timer } from 'rxjs';
 
 type TaskState = 'idle' | 'scanning' | 'matched' | 'completed';

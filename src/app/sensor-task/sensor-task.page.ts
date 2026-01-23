@@ -15,7 +15,7 @@ import {
   IonChip,
   IonLabel,
 } from '@ionic/angular/standalone';
-import { LeaderboardService } from '../leaderboard.service';
+import { LeaderboardService } from '../services/leaderboard.service';
 import { Subscription, timer } from 'rxjs';
 
 type TaskState = 'idle' | 'running' | 'completed';

@@ -1,6 +1,6 @@
 import { Injectable,inject } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
-import { LeaderboardService } from '../leaderboard.service';
+import { LeaderboardService } from './leaderboard.service';
 
 @Injectable({ providedIn: 'root' })
 export class HuntTimerService {

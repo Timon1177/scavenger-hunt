@@ -17,7 +17,7 @@ import {
 
 import { Geolocation } from '@capacitor/geolocation';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { LeaderboardService } from '../leaderboard.service';
+import { LeaderboardService } from '../services/leaderboard.service';
 
 type TaskState = 'idle' | 'tracking' | 'completed';
 

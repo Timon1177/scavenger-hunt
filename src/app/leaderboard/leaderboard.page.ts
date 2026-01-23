@@ -13,7 +13,7 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { radioButtonOn } from 'ionicons/icons';
-import { LeaderboardService } from '../leaderboard.service';
+import { LeaderboardService } from '../services/leaderboard.service';
 import { iHunter } from '../ihunter';
 
 @Component({
@@ -44,47 +44,42 @@ export class LeaderboardPage implements OnInit {
 
   title = 'Top Läufe';
   intro =
-    'Ergebnisse aus dem Online-Leaderboard. Darunter deine gespeicherten Durchführungen.';
+    'Ergebnisse aus dem Leaderboard. Darunter deine gespeicherten Durchführungen.';
 
   getHunters(): void {
     this.leaderboardService
       .getHunters()
       .subscribe((hunters) => (this.hunters = hunters));
-      //this is for testing with the mock hunters
   }
 
   async getRuns(){
     this.hunters = await this.leaderboardService.getRuns()
   }
 
-  formatTime(minutes: number): string {
-    const totalMiliseconds = Math.floor(minutes * 60);
-
-    const hours = Math.floor(totalMiliseconds / 3600000);
-    const remaining = totalMiliseconds % 3600000;
-    const mins = Math.floor(remaining / 60000);
-    const seconds = remaining % 60000;
-
+  formatTime(milliseconds: number): string {
+    const totalSeconds = Math.round(milliseconds / 1000);
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
     const pad = (n: number) => n.toString().padStart(2, '0');
-
-    return `${pad(hours)}:${pad(mins)}:${pad(seconds)}`;
+    return `${pad(mins)}:${pad(secs)}`;
   }
 
   formatDate(huntDate: Date) {
     const today = Date.now();
-    const formatedHuntDate = new Date(huntDate)
+    const formatedHuntDate = new Date(huntDate);
+    const timeDiff = today - formatedHuntDate.getTime();
 
-    if (today - formatedHuntDate.getTime() <= 0) {
-      return 'The fucking future';
+    if (timeDiff < 0) {
+      return 'Bald';
     }
-    if (today - formatedHuntDate.getTime() <= 86400000) {
+    if (timeDiff <= 86400000) {
       return 'Heute';
-    } else if (today - formatedHuntDate.getTime() <= 172800000) {
+    } else if (timeDiff <= 172800000) {
       return 'Gestern';
     } else {
-      return (
-        formatedHuntDate.getDate().toString() + ' ' + (formatedHuntDate.getMonth() + 1).toString()
-      );
+      const day = formatedHuntDate.getDate().toString().padStart(2, '0');
+      const month = (formatedHuntDate.getMonth() + 1).toString().padStart(2, '0');
+      return `${day}.${month}`;
     }
   }
 
@@ -93,7 +88,6 @@ export class LeaderboardPage implements OnInit {
     }
 
   ngOnInit() {
-    // this.getHunters(); for testing
     this.getRuns()
   }
 }
