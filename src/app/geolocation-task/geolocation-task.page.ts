@@ -51,7 +51,7 @@ export class GeolocationTaskPage implements OnDestroy {
   state: TaskState = 'idle';
   title = 'Geolocation';
   intro =
-    'Beweg dich in den Zielbereich. Sobald du nah genug bist, kannst du bestätigen.';
+    'Beweg dich zum Vorplatz der Migros Mattenhof. Sobald du nah genug bist, kannst du bestätigen.';
 
   target = {
     lat: 47.02750,
