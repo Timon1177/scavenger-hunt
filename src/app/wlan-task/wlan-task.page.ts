@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, NgZone, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TaskNavigationService } from '../services/task-navigation.service';
@@ -13,7 +13,7 @@ import {
   IonFooter,
 } from '@ionic/angular/standalone';
 
-import { Network } from '@capacitor/network';
+import { Network, ConnectionStatus } from '@capacitor/network';
 
 type TaskState = 'idle' | 'running' | 'completed';
 
@@ -32,11 +32,14 @@ type TaskState = 'idle' | 'running' | 'completed';
     IonFooter,
   ],
   templateUrl: './wlan-task.page.html',
-  styleUrl: './wlan-task.page.scss',
+  styleUrls: ['./wlan-task.page.scss'],
 })
 export class WlanTaskPage implements OnDestroy {
-
-  constructor(private nav: TaskNavigationService, private router: Router) {}
+  constructor(
+    private nav: TaskNavigationService,
+    private router: Router,
+    private zone: NgZone
+  ) {}
 
   taskTitle = 'WLAN an / aus';
   taskDesc = 'Verbinde dich mit WLAN und trenne es danach wieder.';
@@ -62,13 +65,14 @@ export class WlanTaskPage implements OnDestroy {
     const status = await Network.getStatus();
     this.handleStatus(status);
 
-    this.listener = Network.addListener(
-      'networkStatusChange',
-      status => this.handleStatus(status)
-    );
+    this.listener = await Network.addListener('networkStatusChange', (status) => {
+      this.zone.run(() => {
+        this.handleStatus(status);
+      });
+    });
   }
 
-  handleStatus(status: any): void {
+  private handleStatus(status: ConnectionStatus): void {
     if (status.connected && status.connectionType === 'wifi') {
       this.wasConnected = true;
     }
@@ -93,13 +97,15 @@ export class WlanTaskPage implements OnDestroy {
   }
 
   cancelRun(): void {
-    this.cleanup();
+    void this.cleanup();
     this.nav.abort();
   }
 
   private async cleanup(): Promise<void> {
     if (this.listener) {
-      await this.listener.remove();
+      try {
+        await this.listener.remove();
+      } catch {}
       this.listener = null;
     }
   }

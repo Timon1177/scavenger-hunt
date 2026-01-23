@@ -54,9 +54,9 @@ export class GeolocationTaskPage implements OnDestroy {
     'Beweg dich in den Zielbereich. Sobald du nah genug bist, kannst du bestätigen.';
 
   target = {
-  lat: 47.02750,
-  lng: 8.30101
-};
+    lat: 47.02750,
+    lng: 8.30101,
+  };
 
   private leaderboardService = inject(LeaderboardService);
 
@@ -88,8 +88,7 @@ export class GeolocationTaskPage implements OnDestroy {
       const ok =
         p.location === 'granted' || (p as any).coarseLocation === 'granted';
       if (!ok) this.router.navigateByUrl('/permissions');
-    } catch {
-    }
+    } catch {}
   }
 
   async startTask(): Promise<void> {
