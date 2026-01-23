@@ -32,7 +32,7 @@ import { TaskNavigationService } from '../services/task-navigation.service';
   templateUrl: './result.page.html',
   styleUrls: ['./result.page.scss'],
 })
-export class ResultPage implements OnInit{
+export class ResultPage{
   headerTitle = 'Ergebnis';
   headerSubtitle = 'Alles auf einen Blick';
 
@@ -54,6 +54,7 @@ export class ResultPage implements OnInit{
 
   async ionViewWillEnter(): Promise<void> {
     const ms = await this.timer.stop();
+    this.leaderboardService.saveRun()
     this.duration = this.timer.formatMs(ms ?? 0);
   }
 
@@ -76,9 +77,5 @@ export class ResultPage implements OnInit{
 
   goLeaderboard(): void {
     this.nav.leaderboard();
-  }
-
-  ngOnInit(): void {
-    this.leaderboardService.saveRun()
   }
 }
