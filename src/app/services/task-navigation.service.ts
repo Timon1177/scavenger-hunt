@@ -33,7 +33,7 @@ export class TaskNavigationService {
   }
 
   abort(): void {
-    this.router.navigateByUrl('/home');
+    this.router.navigateByUrl('/leaderboard');
   }
 
   leaderboard(): void {
